@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# This is a faked-up script to handle the final provisioning steps for
+# both SDC 6 and SDC 7.
+#
+#  - SDC6 expects that a zone will reboot at the end of a provision.
+#
+#  - SDC7 expects that the /var/svc/provisioning file will be moved out of
+#    the way, so we rename it to provision_success.
+#
+# To handle both cases, we first do the reboot, then the rename.  To do this
+# we create scripts as necessary then remove them once they have executed.
+#
+
+
+#
+# Create the SDC7 script to run on next boot.  Make sure it has a lower
+# priority than this script just to avoid any chance it will run on this boot.
+#
+cat >/etc/rc2.d/S98mdata <<EOF
+#!/bin/bash
+
+if [ -f /var/svc/provisioning ]; then
+	mv /var/svc/provision{ing,_success}
+fi
+
+rm -f /etc/rc2.d/S98mdata
+EOF
+chmod +x /etc/rc2.d/S98mdata 
+
+#
+# While we are here, we can do some svc fixups that we were unable to
+# do at repository.db creation time.
+#
+svcadm disable svc:/network/dns/multicast:default
+svcadm disable svc:/network/physical:nwam
+svcadm disable svc:/network/rpc/bind:default
+svcadm disable svc:/system/rcap:default
+svcadm enable  svc:/system/sac:default
+
+#
+# Now handle the SDC6 case.  Remove this script and reboot.
+#
+rm -f /etc/rc2.d/S99final
+/usr/sbin/reboot

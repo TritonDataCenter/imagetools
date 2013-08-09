@@ -1,0 +1,128 @@
+#!/bin/bash
+#
+# This is a script to create an initial 'seed' image based on pristine
+# sources.  User images will be built on top of this one.
+#
+# Two arguments are required:
+#
+#  * a path to a built smartos-live repository
+#  * the name of the seed image to create
+#
+
+
+if [ $# -ne 2 ]; then
+	echo "usage: $0 <smartos-live> <seedname>" >&2
+	exit 2
+else
+	smartoslive=$1; shift
+	protoname=$1; shift
+fi
+
+imagetoolsdir="$(dirname $0)"
+
+set -ex
+
+zfs destroy zones/${protoname} || true
+zfs create zones/${protoname}
+
+#
+# Requisite directories and symlinks
+#
+for dir in /home /root /var/ssh
+do
+  mkdir -p /zones/${protoname}/root${dir}
+done
+mkdir -p -m 1777 /zones/${protoname}/root/tmp
+ln -s ./usr/bin /zones/${protoname}/root/bin
+
+#
+# Copy in proto directories
+#
+for dir in etc var
+do
+  rsync -av ${smartoslive}/proto/${dir} /zones/${protoname}/root/
+done
+
+#
+# Apply overlays
+#
+rsync -av ${smartoslive}/overlay/generic/etc/ /zones/${protoname}/root/etc/
+
+#
+# Apply manual changes.
+#
+#  - remove legacy rc2.d scripts
+#  - remove users which may clash with pkgsrc, and sort.
+#
+rm -f /zones/${protoname}/root/etc/rc2.d/S*
+ed /zones/${protoname}/root/etc/passwd <<EOF
+/^lp/d
+/^gdm/d
+/^mysql/d
+/^openldap/d
+/^webservd/d
+/^postgres/d
+w
+q
+EOF
+ed /zones/${protoname}/root/etc/shadow <<EOF
+/^lp/d
+/^gdm/d
+/^mysql/d
+/^openldap/d
+/^webservd/d
+/^postgres/d
+w
+q
+EOF
+ed /zones/${protoname}/root/etc/group <<EOF
+/^lp/d
+/^gdm/d
+/^mysql/d
+/^openldap/d
+/^webservd/d
+/^postgres/d
+w
+q
+EOF
+for file in group passwd
+do
+  sort -t: -k3,3n /zones/${protoname}/root/etc/${file} >/tmp/${file} \
+    && mv /tmp/${file} /zones/${protoname}/root/etc/${file}
+done
+ed /zones/${protoname}/root/etc/user_attr >/dev/null <<EOF
+/^lp/d
+/^admin/d
+w
+q
+EOF
+
+#
+# Generate SVC repository.  Some manifests are missing, apply them manually.
+#
+${imagetoolsdir}/create-smf-repo ${smartoslive} ${imagetoolsdir}/include/manifests /tmp/repository.db
+#svcdir="${smartoslive}/projects/illumos/usr/src/cmd/svc"
+#for mf in ${smartoslive}/proto/lib/svc/manifest/system/boot-archive.xml \
+#          ${smartoslive}/overlay/generic/lib/svc/manifest/system/sysidtool.xml \
+#for mf in ${imagetoolsdir}/include/mdata.xml
+#do
+#  env SVCCFG_REPOSITORY=/tmp/repository.db \
+#      SVCCFG_CONFIGD_PATH=${svcdir}/configd/svc.configd-native \
+#      ${svcdir}/svccfg/svccfg-native import ${mf}
+#done
+#
+# Import our fake mdata.xml to satisfy SDC 6.5 and 7.0
+#
+#env SVCCFG_REPOSITORY=/tmp/repository.db \
+#    SVCCFG_CONFIGD_PATH=${smartoslive}/projects/illumos/usr/src/cmd/svc/configd/svc.configd-native \
+#  ${smartoslive}/projects/illumos/usr/src/cmd/svc/svccfg/svccfg-native import ${imagetoolsdir}/include/mdata.xml
+cp /tmp/repository.db /zones/${protoname}/root/etc/svc/repository.db
+
+#
+# Do just enough zoneinit stuff to get a zone to boot, this will be overwritten
+# later when we do a proper smtools install.
+#
+mkdir -p /zones/${protoname}/root/var/zoneinit
+cp ${imagetoolsdir}/include/zoneinit.json /zones/${protoname}/root/var/zoneinit
+cp ${imagetoolsdir}/include/S99final /zones/${protoname}/root/etc/rc2.d/S99final
+chmod 0755 /zones/${protoname}/root/etc/rc2.d/S99final

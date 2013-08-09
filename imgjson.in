@@ -1,0 +1,22 @@
+{
+  "name": "@NAME@",
+  "version": "@VERSION@",
+  "type": "zone-dataset",
+  "description": "@DESCRIPTION@",
+  "published_at": "@DATESTAMP@",
+  "os": "smartos",
+  "creator_name": "@CREATOR_NAME@",
+  "creator_uuid": "@CREATOR_UUID@",
+  "urn": "sdc:sdc:@NAME@:@VERSION@",
+  "files": [
+    {
+      "path": "@NAME@-@VERSION@.zfs.gz",
+      "sha1": "@SHA1@",
+      "size": @SIZE@
+    }
+  ],
+  "requirements": {
+    "networks": [ {"name": "net0", "description": "public"} ]
+  },
+  "uuid": "@UUID@"
+}

@@ -1,0 +1,7 @@
+{
+  "version": "1.5.1",
+  "features": {
+    "var_svc_provisioning": true,
+    "reboot": true
+  }
+}
