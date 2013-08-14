@@ -1,0 +1,137 @@
+#!/bin/bash
+#
+# Install base-specific configuration and customization to a zone.
+#
+
+
+if [ $# -eq 2 ]; then
+	config=$1; shift
+	zone=$1; shift
+else
+	echo "usage: $0 <config> <zone>" >&2
+	exit 2
+fi
+
+#
+# Sanity checks.
+#
+if [[ ! "${config}" =~ ^([0-9]{4}Q[0-9]|trunk)-(i386|x86_64|sngl|multiarch) ]]; then
+	echo "ERROR: Unsupported configuration: ${config}" >&2
+	exit 1
+fi
+
+if ! zoneadm -z ${zone} list >/dev/null 2>&1; then
+	echo "ERROR: Zone does not exist: ${zone}" >&2
+	exit 1
+fi
+if [ "$(dirname $0)" != "." ]; then
+	echo "ERROR: This script must be run from the imagetools directory." >&2
+	exit 1
+fi
+
+#
+# Set up configuration variables for the specified target.
+#
+IMAGE_PACKAGES="
+changepass
+coreutils
+curl
+diffutils
+duo-unix
+findutils
+gawk
+genbfpw
+grep
+groff
+gsed
+gtar-base
+guardtime
+less
+mozilla-rootcerts
+nodejs
+patch
+pkg_alternatives
+postfix
+sdc-manta
+sdc-smartdc
+smtools
+sudo
+"
+if [[ "${config}" =~ sngl ]]; then
+	CRLE_DPATH_32="/system/lib:/system/usr/lib"
+	CRLE_DPATH_64="/system/lib/64:/system/usr/lib/64"
+	CRLE_TPATH_32="/system/lib/secure:/system/usr/lib/secure"
+	CRLE_TPATH_64="/system/lib/secure/64:/system/usr/lib/secure/64"
+	IMAGE_MANDIRS="/usr/share/man:/system/usr/share/man"
+	# Base vim doesn't work due to missing terminfo.
+	IMAGE_PACKAGES="${IMAGE_PACKAGES} vim"
+	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
+	IMAGE_PREFIX="/usr"
+	IMAGE_SYSCONFDIR="/etc"
+else
+	CRLE_DPATH_32="/lib:/usr/lib"
+	CRLE_DPATH_64="/lib/64:/usr/lib/64"
+	CRLE_TPATH_32="/lib/secure:/usr/lib/secure"
+	CRLE_TPATH_64="/lib/secure/64:/usr/lib/secure/64"
+	IMAGE_MANDIRS="/opt/local/man:/usr/share/man"
+	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin"
+	IMAGE_PREFIX="/opt/local"
+	IMAGE_SYSCONFDIR="/opt/local/etc"
+fi
+IMAGE_PRODUCT="Joyent SmartMachine"
+IMAGE_SHORTPRODUCT="SmartMachine"
+IMAGE_BRANCH="${config%-*}"
+IMAGE_ARCH="${config##*-}"
+IMAGE_DOC="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+
+IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
+IMAGE_PACKAGES=$(echo ${IMAGE_PACKAGES} | tr '\n' ' ')
+
+#
+# Ok, we should have all the configuration setup we need, now we start
+# applying the overlay.
+#
+zoneroot="/zones/${zone}/root"
+if [ ! -d ${zoneroot} ]; then
+	echo "ERROR: Cannot find zone directory." >&2
+	exit 1
+fi
+for var in CRLE_DPATH_32 CRLE_DPATH_64 CRLE_TPATH_32 CRLE_TPATH_64 \
+	   IMAGE_PATH IMAGE_CSHPATH IMAGE_MANDIRS \
+	   IMAGE_PREFIX IMAGE_SYSCONFDIR \
+	   IMAGE_PRODUCT IMAGE_SHORTPRODUCT \
+	   IMAGE_BRANCH IMAGE_ARCH IMAGE_DOC IMAGE_PACKAGES
+do
+	sedsubst="${sedsubst} s!@${var}@!${!var}!g;"
+done
+for dir in etc root
+do
+	#
+	# Find all the files in the overlay directory, ensure their target
+	# directories exist, and then filter them through the configuration
+	# generator before installing to the target.
+	#
+	for f in $(find overlay/${dir} -type f)
+	do
+		basef=${f##overlay/}
+		echo "Installing /${basef}"
+		mkdir -p ${zoneroot}/$(dirname ${basef})
+		sed -e "${sedsubst}" ${f} >${zoneroot}/${basef}
+		if [ -x ${f} ]; then
+			chmod +x ${zoneroot}/${basef}
+		fi
+	done
+done
+#
+# Install IMAGE_SYSCONFDIR files into the correct location
+#
+for f in $(find overlay/sysconfdir -type f)
+do
+	basef=${f##overlay/sysconfdir/}
+	echo "Installing ${IMAGE_SYSCONFDIR}/${basef}"
+	mkdir -p ${zoneroot}${IMAGE_SYSCONFDIR}/$(dirname ${basef})
+	sed -e "${sedsubst}" ${f} >${zoneroot}${IMAGE_SYSCONFDIR}/${basef}
+done
+
+echo "Logging into ${zone} to run /root/customize"
+zlogin ${zone} /root/customize

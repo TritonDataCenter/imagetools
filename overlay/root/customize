@@ -1,0 +1,244 @@
+#!/bin/bash
+#
+# This script does final set up of a base zone, and is destructive.
+#
+
+tempdir=/var/tmp/basesetup
+mkdir -p ${tempdir}
+exec 5>${tempdir}/basesetup.log
+BASH_XTRACEFD=5
+PS4='+(${BASH_SOURCE}:${LINENO}): ${SECONDS} ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+export PS4
+
+set -o errexit
+set -o pipefail
+set -o xtrace
+
+basedir=$(dirname $0)
+
+fail()
+{
+	echo "$*" >&2
+	echo "See ${tempdir}/basesetup.log for more details."
+	exit 1
+}
+
+# Variables set from install-base.
+IMAGE_PATH="@IMAGE_PATH@"
+IMAGE_PREFIX="@IMAGE_PREFIX@"
+IMAGE_SYSCONFDIR="@IMAGE_SYSCONFDIR@"
+IMAGE_PRODUCT="@IMAGE_PRODUCT@"
+IMAGE_BRANCH="@IMAGE_BRANCH@"
+IMAGE_ARCH="@IMAGE_ARCH@"
+IMAGE_PRODUCT="@IMAGE_PRODUCT@"
+IMAGE_DOC="@IMAGE_DOC@"
+IMAGE_PACKAGES="@IMAGE_PACKAGES@"
+
+PKGSRC_BASE="http://pkgsrc.joyent.com/packages/SmartOS"
+PKGSRC_BOOTSTRAP="${PKGSRC_BASE}/bootstrap/bootstrap-${IMAGE_BRANCH}-${IMAGE_ARCH}.tar.gz"
+PKGSRC_PACKAGES="${PKGSRC_BASE}/${IMAGE_BRANCH}/${IMAGE_ARCH}/All"
+
+PATH=${IMAGE_PATH}
+export PATH
+
+if [ ! -f ${tempdir}/$(basename ${PKGSRC_BOOTSTRAP}) ]; then
+	echo -n "Downloading pkgsrc bootstrap..."
+	(cd ${tempdir} && curl -O ${PKGSRC_BOOTSTRAP}) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+
+	echo -n "Extracting pkgsrc bootstrap..."
+	gtar -zxf ${tempdir}/$(basename ${PKGSRC_BOOTSTRAP}) -C / >&5 2>&5 || fail "ERROR!"
+	echo "done."
+fi
+
+echo -n "Configuring package tools..."
+(
+	echo "PKG_PATH=${PKGSRC_PACKAGES}" >${IMAGE_SYSCONFDIR}/pkg_install.conf
+	${IMAGE_PREFIX}/sbin/pkg_admin rebuild
+) >&5 2>&5 || fail "ERROR!"
+echo "done."
+
+echo -n "Installing basic packages..."
+(
+	for pkg in ${IMAGE_PACKAGES}; do
+		${IMAGE_PREFIX}/sbin/pkg_info -qE ${pkg} || pkg_add ${pkg} || exit 1
+	done
+) >&5 2>&5 || fail "ERROR!"
+echo "done."
+
+echo -n "Unpacking the SSL root cert bundle..."
+(
+	cd ${IMAGE_SYSCONFDIR}/openssl/certs \
+	&& ${IMAGE_PREFIX}/sbin/mozilla-rootcerts extract \
+	&& ${IMAGE_PREFIX}/sbin/mozilla-rootcerts rehash
+) >&5 2>&5 || fail "ERROR!"
+echo "done."
+
+echo "Updating miscellaneous config files..."
+
+echo "	- creating crle configs"
+crle -c /var/ld/ld.config -l @CRLE_DPATH_32@ -s @CRLE_TPATH_32@
+crle -c /var/ld/64/ld.config -64 -l @CRLE_DPATH_64@ -s @CRLE_TPATH_64@
+
+echo "	- adding libsmartsshd.so to /etc/ssh/sshd_config"
+cat >>/etc/ssh/sshd_config <<EOF
+
+PubKeyPlugin libsmartsshd.so
+EOF
+
+echo "	- creating /etc/pkgsrc_version"
+cat >/etc/pkgsrc_version <<EOF
+release: ${IMAGE_BRANCH}
+architecture: ${IMAGE_ARCH}
+EOF
+
+echo "	- creating /etc/product"
+cat >/etc/product <<EOF
+Name: ${IMAGE_PRODUCT}
+Image: ${IMAGE_ARCH} ${IMAGE_VERSION}
+Documentation: ${IMAGE_DOC}
+EOF
+
+echo "	- adding fetch-pkg-vulnerabilities to crontab"
+crontab -l | sed "/fetch-pkg-vulnerabilities/d; \$a\
+0 5 * * * ${IMAGE_PREFIX}/sbin/pkg_admin fetch-pkg-vulnerabilities >/dev/null 2>&1
+" | crontab
+
+echo "	- configuring /etc/rsyslog.conf"
+sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
+  /etc/rsyslog.conf >${tempdir}/rsyslog.conf \
+    && mv ${tempdir}/rsyslog.conf /etc/rsyslog.conf
+pkill -HUP rsyslogd
+sleep 1
+rm -f /var/log/{auth,postfix}.log
+
+echo "	- populating /root with files from /etc/skel"
+rm -f /etc/skel/local.*
+cp -Rp /etc/skel/.???* /root/
+chown -R root:root /root/.???*
+
+echo "	- setting default paths"
+echo "PATH=${PATH}" >>/etc/default/cron
+echo "SUPATH=${PATH}" >>/etc/default/cron
+sed -e 's,^#\(.*PATH\)=.*,\1='${PATH}',g' /etc/default/su > ${tempdir}/su \
+  && mv ${tempdir}/su /etc/default/su
+
+echo "	- setting C locale"
+sed -e '' /etc/default/init > ${tempdir}/init \
+  && mv ${tempdir}/init /etc/default/init
+
+echo "	- configuring postfix"
+cat >>${IMAGE_SYSCONFDIR}/postfix/main.cf <<EOF
+
+#
+# Joyent customisations
+#
+alias_database = hash:${IMAGE_SYSCONFDIR}/postfix/aliases
+alias_maps = \$alias_database
+canonical_maps = hash:${IMAGE_SYSCONFDIR}/postfix/canonical
+default_database_type = hash
+home_mailbox = Maildir/
+inet_interfaces = loopback-only
+inet_protocols = all
+mailbox_size_limit = 102400000
+message_size_limit = 51200000
+mynetworks = \$myhostname, 127.0.0.0/8
+owner_request_special = no
+queue_minfree = 76800000
+recipient_canonical_maps = hash:${IMAGE_SYSCONFDIR}/postfix/recipient_canonical
+recipient_delimiter = +
+sender_canonical_maps = hash:${IMAGE_SYSCONFDIR}/postfix/sender_canonical
+smtpd_banner = \$myhostname ESMTP
+smtpd_client_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
+	reject_unknown_reverse_client_hostname
+smtpd_data_restrictions =
+	permit_mynetworks,
+	reject_unauth_pipelining,
+	permit_sasl_authenticated
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
+	reject_invalid_helo_hostname,
+	reject_non_fqdn_helo_hostname
+smtpd_recipient_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
+	reject_unlisted_recipient,
+	reject_non_fqdn_recipient,
+	reject_unauth_destination,
+	reject_unknown_recipient_domain,
+	check_recipient_access hash:${IMAGE_SYSCONFDIR}/postfix/filtered_domains
+smtpd_sender_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
+	reject_unlisted_sender,
+	reject_non_fqdn_sender,
+	reject_unknown_sender_domain
+strict_rfc821_envelopes = yes
+virtual_alias_maps = hash:${IMAGE_SYSCONFDIR}/postfix/virtual
+
+# Mailman support - enable if used
+#relay_domains = hash:${IMAGE_SYSCONFDIR}/postfix/maillists
+#transport_maps = hash:${IMAGE_SYSCONFDIR}/postfix/transport
+#mailman_destination_recipient_limit = 1
+EOF
+for f in canonical filtered_domains maillists recipient_canonical \
+	 sender_canonical transport virtual; do
+	>${IMAGE_SYSCONFDIR}/postfix/${f}
+	postmap hash:${IMAGE_SYSCONFDIR}/postfix/${f}
+done
+cat >>/etc/mail/mailx.rc <<EOF
+
+# use postfix
+set sendmail=${IMAGE_PREFIX}/sbin/sendmail
+EOF
+
+echo "	- add pkgsrc tools to exec_attr"
+cat >>/etc/security/exec_attr <<EOF
+# Joyent specific execution attributes
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/gmake:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/make:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/pkgin:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_add:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_admin:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_chk:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_create:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_delete:uid=0
+Software Installation:suser:cmd:::${IMAGE_PREFIX}/sbin/pkg_info:uid=0
+EOF
+
+echo -n "Creating the default 'admin' user..."
+(
+	useradd -o -u 100 -g staff \
+	    -s /usr/bin/bash -d /home/admin \
+	    -m -k /etc/skel admin \
+	&& usermod -P "Service Management,Software Installation" admin \
+	&& echo "admin ALL=(root) NOPASSWD: SETENV: ALL" \
+	    >${IMAGE_SYSCONFDIR}/sudoers.d/admin \
+	&& chmod 0440 ${IMAGE_SYSCONFDIR}/sudoers.d/admin
+) >&5 2>&5 || fail "ERROR!"
+echo "done."
+
+echo -n "Creating the '_pkgsrc' user/group to make users/group start at 1000..."
+(
+	groupadd -o -g 999 _pkgsrc \
+	&& useradd -o -u 999 -g _pkgsrc -d /nonexistent -s /bin/false \
+	    -c "Last pkgsrc UID" _pkgsrc
+) >&5 2>&5 || fail "ERROR!"
+echo "done."
+
+# clean volatile passwd files
+rm -f /etc/o{passwd,shadow,user_attr}
+
+# Whilst we are using changepass in zoneinit we need this.
+mkdir -p /var/lock
+
+echo -n "Cleaning up..."
+rm -rf $0 ${tempdir}
+echo "done."
+
+echo "Passing control to sm-prepare-image for the final stage..."
+${IMAGE_PREFIX}/bin/sm-prepare-image -y

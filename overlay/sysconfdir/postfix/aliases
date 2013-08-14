@@ -1,0 +1,16 @@
+MAILER-DAEMON:	postmaster
+abuse:		postmaster
+bin:		root
+daemon:		root
+decode:		root
+dumper:		root
+ftp-bugs:	root
+manager:	root
+named:		root
+nobody:		root
+operator:	root
+postfix:	root
+postmaster:	root
+uucp:		root
+webmin:		root
+www:		root

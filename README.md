@@ -50,8 +50,40 @@ You can then use the UUID as input for the next phase.
 
 ### Creating base images
 
-Base images are comprised of a baseline seed image, plus an applied `basesh`
-image.  This overlays the basic set of pkgsrc packages, standard users, and
-some config customisation applicable to each base image.
+Base images are comprised of a baseline seed image, plus an applied overlay
+appropriate for the target image.  You use the `install-image` tool to copy
+the overlay files into a specified zone and then execute the customize script.
 
-TODO..
+So, again using the `2013Q2-sngl` image as an example, start by creating a
+basic zone based on the seed image created above (replacing `image_uuid` with
+the uuid of the seed image):
+
+    $ vmadm create <<EOF
+    {
+      "brand": "sngl",
+      "image_uuid": "05d41bca-03f8-11e3-9064-c359e89c4139",
+      "max_physical_memory": 512,
+      "nics": [
+        {
+          "nic_tag": "admin",
+          "ip": "dhcp"
+        }
+      ]
+    }
+    EOF
+    Successfully created VM c374c4bc-2395-4848-b28d-0c18937e7775
+
+Then we can apply the `2013Q2-sngl` configuration to the VM with:
+
+    $ ./install-base 2013Q2-sngl c374c4bc-2395-4848-b28d-0c18937e7775
+
+The final part of this script runs `sm-prepare-image` which does some final
+image cleanup and shutdown, after which you can simply generate the finished
+image, again with `create-image`:
+
+    $ ./create-image sngl-13.2.0 c374c4bc-2395-4848-b28d-0c18937e7775
+    Enter your username: jperkin
+    Enter your user UUID (leave empty to create one): d9d9dd4b-3011-4a45-bffe-ddc9ba4be2d2
+    Enter description: A multiarch SmartOS image utilising a GNU/Linux layout.
+
+This final image and manifest should now be suitable for production use.
