@@ -42,15 +42,15 @@ uuid=$(uuid)
 datestamp=$(date '+%FT%RZ')
 
 cat $(dirname $0)/imgjson.in \
-  | sed -e "s/@NAME@/${name%-*}/g" \
-        -e "s/@VERSION@/${name##*-}/g" \
-        -e "s/@CREATOR_NAME@/${creator_name}/g" \
-        -e "s/@CREATOR_UUID@/${creator_uuid}/g" \
-        -e "s/@DATESTAMP@/${datestamp}/g" \
-        -e "s/@DESCRIPTION@/${description}/g" \
-        -e "s/@SHA1@/${sha1}/g" \
-        -e "s/@SIZE@/${size}/g" \
-        -e "s/@UUID@/${uuid}/g" \
+  | sed -e "s!@NAME@!${name%-*}!g" \
+        -e "s!@VERSION@!${name##*-}!g" \
+        -e "s!@CREATOR_NAME@!${creator_name}!g" \
+        -e "s!@CREATOR_UUID@!${creator_uuid}!g" \
+        -e "s!@DATESTAMP@!${datestamp}!g" \
+        -e "s!@DESCRIPTION@!${description}!g" \
+        -e "s!@SHA1@!${sha1}!g" \
+        -e "s!@SIZE@!${size}!g" \
+        -e "s!@UUID@!${uuid}!g" \
   >${outdir}/${name}.json
 
 echo "Done.  Now run this to install the image:"
