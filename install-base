@@ -78,8 +78,8 @@ else
 	IMAGE_PREFIX="/opt/local"
 	IMAGE_SYSCONFDIR="/opt/local/etc"
 fi
-IMAGE_PRODUCT="Joyent SmartMachine"
-IMAGE_SHORTPRODUCT="SmartMachine"
+IMAGE_PRODUCT="Joyent Instance"
+IMAGE_SHORTPRODUCT="Instance"
 IMAGE_BRANCH="${config%-*}"
 IMAGE_ARCH="${config##*-}"
 IMAGE_DOC="http://wiki.joyent.com/jpc2/SmartMachine+Base"
