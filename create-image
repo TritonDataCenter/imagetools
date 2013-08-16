@@ -14,17 +14,16 @@ fi
 
 set -e
 
-read -p 'Enter your username: ' creator_name
-read -p 'Enter your user UUID (leave empty to create one): ' creator_uuid
-
-if [ -z "${creator_uuid}" ]; then
-	creator_uuid=$(uuid)
-fi
-
 read -p 'Enter description: ' description
+read -p 'Enter homepage: ' homepage
 
 if [ -z "${description}" ]; then
 	echo "WARNING: No description entered.  Edit ${outdir}/${name}.json"
+	echo "when this script finishes."
+fi
+
+if [ -z "${homepage}" ]; then
+	echo "WARNING: No homepage entered.  Edit ${outdir}/${name}.json"
 	echo "when this script finishes."
 fi
 
@@ -39,15 +38,14 @@ echo "Creating ${outdir}/${name}.json ..."
 sha1=$(digest -a sha1 ${outdir}/${name}.zfs.gz)
 size=$(ls -l ${outdir}/${name}.zfs.gz | awk '{print $5}')
 uuid=$(uuid)
-datestamp=$(date '+%FT%RZ')
+datestamp=$(date '+%FT%TZ')
 
 cat $(dirname $0)/imgjson.in \
   | sed -e "s!@NAME@!${name%-*}!g" \
         -e "s!@VERSION@!${name##*-}!g" \
-        -e "s!@CREATOR_NAME@!${creator_name}!g" \
-        -e "s!@CREATOR_UUID@!${creator_uuid}!g" \
         -e "s!@DATESTAMP@!${datestamp}!g" \
         -e "s!@DESCRIPTION@!${description}!g" \
+        -e "s!@HOMEPAGE@!${homepage}!g" \
         -e "s!@SHA1@!${sha1}!g" \
         -e "s!@SIZE@!${size}!g" \
         -e "s!@UUID@!${uuid}!g" \

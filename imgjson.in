@@ -1,16 +1,18 @@
 {
+  "v": "2",
   "name": "@NAME@",
   "version": "@VERSION@",
   "type": "zone-dataset",
   "description": "@DESCRIPTION@",
+  "homepage": "@HOMEPAGE@",
   "published_at": "@DATESTAMP@",
+  "owner": "9dce1460-0c4c-4417-ab8b-25ca478c5a78",
+  "public": "false",
   "os": "smartos",
-  "creator_name": "@CREATOR_NAME@",
-  "creator_uuid": "@CREATOR_UUID@",
   "urn": "sdc:sdc:@NAME@:@VERSION@",
   "files": [
     {
-      "path": "@NAME@-@VERSION@.zfs.gz",
+      "compression": "gzip",
       "sha1": "@SHA1@",
       "size": @SIZE@
     }
