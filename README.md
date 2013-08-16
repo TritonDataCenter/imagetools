@@ -31,14 +31,12 @@ Once you have a seed file system ready, use `create-image` to turn it into a
 provisionable image and manifest.
 
     $ ./create-image seed-1.0 seed-image
-    Enter your username: jperkin
-    Enter your user UUID (leave empty to create one): d9d9dd4b-3011-4a45-bffe-ddc9ba4be2d2
     Enter description: Seed Image
+    Enter homepage: http://wiki.joyent.com/jpc2/SmartMachine+Base
 
 This will use `/zones/seed-image`, snapshot it, and create a file system image
-along with a manifest file ready for importing with `imgadm`.  Give it your
-user credentials (or just make some up) and a useful description when
-prompted.
+along with a manifest file ready for importing with `imgadm`.  Give it a useful
+description and homepage pointing to a description when prompted.
 
 Once complete it will output an `imgadm` command you can use, e.g.
 
@@ -82,8 +80,7 @@ image cleanup and shutdown, after which you can simply generate the finished
 image, again with `create-image`:
 
     $ ./create-image sngl-13.2.0 c374c4bc-2395-4848-b28d-0c18937e7775
-    Enter your username: jperkin
-    Enter your user UUID (leave empty to create one): d9d9dd4b-3011-4a45-bffe-ddc9ba4be2d2
     Enter description: A multiarch SmartOS image utilising a GNU/Linux layout.
+    Enter homepage: http://wiki.joyent.com/jpc2/SmartMachine+Base
 
 This final image and manifest should now be suitable for production use.
