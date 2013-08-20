@@ -14,6 +14,8 @@ fi
 
 set -e
 
+outdir="$(dirname $0)/output"
+
 read -p 'Enter description: ' description
 read -p 'Enter homepage: ' homepage
 
@@ -27,7 +29,6 @@ if [ -z "${homepage}" ]; then
 	echo "when this script finishes."
 fi
 
-outdir="$(dirname $0)/output"
 echo "Taking snapshot ..."
 zfs snapshot zones/${zone}@snap$$
 echo "Sending snapshot to ${outdir}/${name}.zfs.gz ..."
