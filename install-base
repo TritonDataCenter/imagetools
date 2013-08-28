@@ -68,6 +68,7 @@ if [[ "${config}" =~ sngl ]]; then
 	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
 	IMAGE_PREFIX="/usr"
 	IMAGE_SYSCONFDIR="/etc"
+	IMAGE_DOC="http://wiki.joyent.com/wiki/display/jpc2/SNGL+Instance"
 else
 	CRLE_DPATH_32="/lib:/usr/lib"
 	CRLE_DPATH_64="/lib/64:/usr/lib/64"
@@ -77,12 +78,12 @@ else
 	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin"
 	IMAGE_PREFIX="/opt/local"
 	IMAGE_SYSCONFDIR="/opt/local/etc"
+	IMAGE_DOC="http://wiki.joyent.com/wiki/display/jpc2/SmartMachine+Base"
 fi
 IMAGE_PRODUCT="Joyent Instance"
 IMAGE_SHORTPRODUCT="Instance"
 IMAGE_BRANCH="${config%-*}"
 IMAGE_ARCH="${config##*-}"
-IMAGE_DOC="http://wiki.joyent.com/jpc2/SmartMachine+Base"
 
 IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
 IMAGE_PACKAGES=$(echo ${IMAGE_PACKAGES} | tr '\n' ' ')
