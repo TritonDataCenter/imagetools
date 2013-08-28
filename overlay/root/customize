@@ -104,13 +104,27 @@ crontab -l | sed "/fetch-pkg-vulnerabilities/d; \$a\
 0 5 * * * ${IMAGE_PREFIX}/sbin/pkg_admin fetch-pkg-vulnerabilities >/dev/null 2>&1
 " | crontab
 
-echo "	- configuring /etc/rsyslog.conf"
+echo "	- configuring syslog"
 sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
   /etc/rsyslog.conf >${tempdir}/rsyslog.conf \
     && mv ${tempdir}/rsyslog.conf /etc/rsyslog.conf
+sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
+  /etc/syslog.conf >${tempdir}/syslog.conf \
+    && mv ${tempdir}/syslog.conf /etc/syslog.conf
 pkill -HUP rsyslogd
 sleep 1
 rm -f /var/log/{auth,postfix}.log
+
+echo "	- configuring logadm"
+ed /etc/logadm.conf >/dev/null <<EOF
+/messages/a
+/var/log/authlog -C 5 -a 'kill -HUP \`cat /var/run/*syslog*.pid\`' -s 100m
+/var/log/maillog -C 5 -a 'kill -HUP \`cat /var/run/*syslog*.pid\`' -s 100m
+.
+w
+q
+EOF
+crontab -l | awk '/logadm/ { $2 = "*" } { print }' | crontab
 
 echo "	- populating /root with files from /etc/skel"
 rm -f /etc/skel/local.*
