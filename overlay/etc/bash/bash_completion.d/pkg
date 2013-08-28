@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+#
+# Bash completion for pkg tools.
+#
+
+_pkgin()
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    commands="autoremove avail clean export full-upgrade import install keep"
+    commands="${commands} list pkg-build-defs pkg-content pkg-descr provides"
+    commands="${commands} remove requires search show-all-categories"
+    commands="${commands} show-category show-deps show-full-deps show-keep"
+    commands="${commands} show-no-keep show-pkg-category show-rev-deps unkeep"
+    commands="${commands} update upgrade"
+
+    case "${prev}" in
+    # Operations on all packages, including remote
+    in|install|pbd|pkg-build-defs|pc|pkg-content|pd|pkg-descr|\
+    prov|provides|req|requires|sac|show-all-categories)
+        local pkgs=$(pkgin avail | awk '{print $1}')
+        COMPREPLY=( $(compgen -W "${pkgs}" -- ${cur}) )
+        ;;
+    # Operations on local packages
+    ke|keep|rm|remove|uk|unkeep)
+        local pkgs=$(pkgin list | awk '{print $1}')
+        COMPREPLY=( $(compgen -W "${pkgs}" -- ${cur}) )
+        ;;
+    *)
+        COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )        
+        ;;
+    esac
+
+    return 0
+}
+
+complete -F _pkgin pkgin
