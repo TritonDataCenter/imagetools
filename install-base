@@ -4,17 +4,31 @@
 #
 
 
-if [ $# -eq 2 ]; then
-	config=$1; shift
-	zone=$1; shift
-else
-	echo "usage: $0 <config> <zone>" >&2
-	exit 2
-fi
+usage()
+{
+	echo "usage: install-base [-hv] -c <config> -r <release> -z <zone>" >&2
+	exit 1
+}
+
+while getopts c:hr:vz: flag; do
+	case "${flag}" in
+	c) config=$OPTARG ;;
+	r) release=$OPTARG ;;
+	v) verbose=1 ;;
+	z) zone=$OPTARG ;;
+	*) usage ;;
+	esac
+done
 
 #
 # Sanity checks.
 #
+for var in config release zone; do
+	if [ -z "${!var}" ]; then
+		echo "ERROR: ${var} not set" >&2
+		usage
+	fi
+done
 if [[ ! "${config}" =~ ^([0-9]{4}Q[0-9]|trunk)-(i386|x86_64|sngl|multiarch) ]]; then
 	echo "ERROR: Unsupported configuration: ${config}" >&2
 	exit 1
@@ -84,6 +98,7 @@ IMAGE_PRODUCT="Joyent Instance"
 IMAGE_SHORTPRODUCT="Instance"
 IMAGE_BRANCH="${config%-*}"
 IMAGE_ARCH="${config##*-}"
+IMAGE_VERSION="${release}"
 
 IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
 IMAGE_PACKAGES=$(echo ${IMAGE_PACKAGES} | tr '\n' ' ')
@@ -100,7 +115,7 @@ fi
 for var in CRLE_DPATH_32 CRLE_DPATH_64 CRLE_TPATH_32 CRLE_TPATH_64 \
 	   IMAGE_PATH IMAGE_CSHPATH IMAGE_MANDIRS \
 	   IMAGE_PREFIX IMAGE_SYSCONFDIR \
-	   IMAGE_PRODUCT IMAGE_SHORTPRODUCT \
+	   IMAGE_PRODUCT IMAGE_SHORTPRODUCT IMAGE_VERSION \
 	   IMAGE_BRANCH IMAGE_ARCH IMAGE_DOC IMAGE_PACKAGES
 do
 	sedsubst="${sedsubst} s!@${var}@!${!var}!g;"

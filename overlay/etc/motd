@@ -2,6 +2,6 @@
  _|  |_      | .-. .  . .-. :--. |-
 |_    _|     ;|   ||  |(.-' |  | |
   |__|   `--'  `-' `;-| `-' '  ' `-'
-                   /  ; @IMAGE_SHORTPRODUCT@ (@IMAGE_ARCH@ @IMAGE_BRANCH@)
+                   /  ; @IMAGE_SHORTPRODUCT@ (@IMAGE_ARCH@ @IMAGE_VERSION@)
                    `-'  @IMAGE_DOC@
 

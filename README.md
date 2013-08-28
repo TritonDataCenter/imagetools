@@ -73,7 +73,10 @@ the uuid of the seed image):
 
 Then we can apply the `2013Q2-sngl` configuration to the VM with:
 
-    $ ./install-base 2013Q2-sngl c374c4bc-2395-4848-b28d-0c18937e7775
+    $ ./install-base -c 2013Q2-sngl -r 13.2.0 -z c374c4bc-2395-4848-b28d-0c18937e7775
+
+This uses the `2013Q2-sngl` configuration, sets the version number to `13.2.0`
+and installs to the specified zone.
 
 The final part of this script runs `sm-prepare-image` which does some final
 image cleanup and shutdown, after which you can simply generate the finished
