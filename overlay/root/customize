@@ -54,7 +54,9 @@ fi
 
 echo -n "Configuring package tools..."
 (
-	echo "PKG_PATH=${PKGSRC_PACKAGES}" >${IMAGE_SYSCONFDIR}/pkg_install.conf
+	if [ ! -f ${IMAGE_SYSCONFDIR}/pkg_install.conf ]; then
+		echo "PKG_PATH=${PKGSRC_PACKAGES}" >${IMAGE_SYSCONFDIR}/pkg_install.conf
+	fi
 	${IMAGE_PREFIX}/sbin/pkg_admin rebuild
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
