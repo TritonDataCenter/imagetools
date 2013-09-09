@@ -247,6 +247,11 @@ echo -n "Creating the '_pkgsrc' user/group to make users/group start at 1000..."
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
 
+echo -n "Rebuilding pkg_alternatives symlinks..."
+(
+	pkg_alternatives rebuild
+) >&5 2>&5 || fail "ERROR!"
+
 # clean volatile passwd files
 rm -f /etc/o{passwd,shadow,user_attr}
 
