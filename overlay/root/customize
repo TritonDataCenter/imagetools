@@ -102,6 +102,15 @@ Image: ${IMAGE_ARCH} ${IMAGE_VERSION}
 Documentation: ${IMAGE_DOC}
 EOF
 
+echo "	- creating /etc/release"
+cat >/etc/release <<EOF
+                                SmartOS x86_64
+              Copyright 2010 Sun Microsystems, Inc.  All Rights Reserved.
+              Copyright 2010-2013 Joyent, Inc.  All Rights Reserved.
+                        Use is subject to license terms.
+                   See `uname -v` for assembly date and time.
+EOF
+
 echo "	- adding fetch-pkg-vulnerabilities to crontab"
 crontab -l | sed "/fetch-pkg-vulnerabilities/d; \$a\
 0 5 * * * ${IMAGE_PREFIX}/sbin/pkg_admin fetch-pkg-vulnerabilities >/dev/null 2>&1
