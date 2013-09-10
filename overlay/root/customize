@@ -149,6 +149,10 @@ echo "SUPATH=${PATH}" >>/etc/default/cron
 sed -e 's,^#\(.*PATH\)=.*,\1='${PATH}',g' /etc/default/su > ${tempdir}/su \
   && mv ${tempdir}/su /etc/default/su
 
+echo "	- creating /usr/local directories"
+mkdir -m 0755 -p /usr/local/{bin,etc,include,lib,sbin,share/man,src}
+ln -s share/man /usr/local/man
+
 echo "	- setting C locale"
 sed -e '' /etc/default/init > ${tempdir}/init \
   && mv ${tempdir}/init /etc/default/init
