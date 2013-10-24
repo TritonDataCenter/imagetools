@@ -98,6 +98,9 @@ fi
 if [[ "${config}" =~ ^(201[012]|2013Q[12]) ]]; then
 	IMAGE_PACKAGES="${IMAGE_PACKAGES} groff"
 fi
+if [[ "${config}" =~ ^(2013Q[34]|201[4-9]) ]]; then
+	IMAGE_PACKAGES="${IMAGE_PACKAGES} rsyslog-7"
+fi
 IMAGE_PRODUCT="Joyent Instance"
 IMAGE_SHORTPRODUCT="Instance"
 IMAGE_BRANCH="${config%-*}"

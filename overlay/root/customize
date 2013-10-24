@@ -139,6 +139,12 @@ q
 EOF
 crontab -l | awk '/logadm/ { $2 = "*" } { print }' | crontab
 
+if pkg_info -qE rsyslog; then
+	echo "  - enabling rsyslog 7"
+	svcadm disable -s system/system-log
+	svcadm enable pkgsrc/rsyslog
+fi
+
 echo "	- populating /root with files from /etc/skel"
 rm -f /etc/skel/local.*
 cp -Rp /etc/skel/.???* /root/
