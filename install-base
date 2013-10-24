@@ -6,13 +6,14 @@
 
 usage()
 {
-	echo "usage: install-base [-hv] -c <config> -r <release> -z <zone>" >&2
+	echo "usage: install-base [-hv] -c <config> [-n <name>] -r <release> -z <zone>" >&2
 	exit 1
 }
 
-while getopts c:hr:vz: flag; do
+while getopts c:hn:r:vz: flag; do
 	case "${flag}" in
 	c) config=$OPTARG ;;
+	n) name=$OPTARG ;;
 	r) release=$OPTARG ;;
 	v) verbose=1 ;;
 	z) zone=$OPTARG ;;
@@ -100,6 +101,12 @@ IMAGE_BRANCH="${config%-*}"
 IMAGE_ARCH="${config##*-}"
 IMAGE_VERSION="${release}"
 
+if [ -n "${name}" ]; then
+	IMAGE_NAME="${name}"
+else
+	IMAGE_NAME="${IMAGE_ARCH}"
+fi
+
 IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
 IMAGE_PACKAGES=$(echo ${IMAGE_PACKAGES} | tr '\n' ' ')
 
@@ -116,7 +123,7 @@ for var in CRLE_DPATH_32 CRLE_DPATH_64 CRLE_TPATH_32 CRLE_TPATH_64 \
 	   IMAGE_PATH IMAGE_CSHPATH IMAGE_MANDIRS \
 	   IMAGE_PREFIX IMAGE_SYSCONFDIR \
 	   IMAGE_PRODUCT IMAGE_SHORTPRODUCT IMAGE_VERSION \
-	   IMAGE_BRANCH IMAGE_ARCH IMAGE_DOC IMAGE_PACKAGES
+	   IMAGE_BRANCH IMAGE_ARCH IMAGE_NAME IMAGE_DOC IMAGE_PACKAGES
 do
 	sedsubst="${sedsubst} s!@${var}@!${!var}!g;"
 done
