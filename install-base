@@ -57,7 +57,6 @@ findutils
 gawk
 genbfpw
 grep
-groff
 gsed
 gtar-base
 guardtime
@@ -94,6 +93,10 @@ else
 	IMAGE_PREFIX="/opt/local"
 	IMAGE_SYSCONFDIR="/opt/local/etc"
 	IMAGE_DOC="http://wiki.joyent.com/wiki/display/jpc2/SmartMachine+Base"
+fi
+# Older images require groff.
+if [[ "${config}" =~ ^(201[012]|2013Q[12]) ]]; then
+	IMAGE_PACKAGES="${IMAGE_PACKAGES} groff"
 fi
 IMAGE_PRODUCT="Joyent Instance"
 IMAGE_SHORTPRODUCT="Instance"
