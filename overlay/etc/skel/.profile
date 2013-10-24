@@ -5,8 +5,9 @@ MANPATH=${MANPATH}:@IMAGE_PREFIX@/lib/perl5/man:@IMAGE_PREFIX@/lib/perl5/vendor_
 MANPATH=${MANPATH}:@IMAGE_MANDIRS@
 PAGER=less
 PATH=@IMAGE_PATH@
+TERMINFO=@IMAGE_PREFIX@/share/lib/terminfo
 
-export FTPMODE MAIL MANPATH PAGER PATH
+export FTPMODE MAIL MANPATH PAGER PATH TERMINFO
 
 # hook man with groff properly
 if [ -x @IMAGE_PREFIX@/bin/groff ]; then
