@@ -283,4 +283,5 @@ rm -rf $0 ${tempdir}
 echo "done."
 
 echo "Passing control to sm-prepare-image for the final stage..."
+rm -f /root/zoneconfig
 ${IMAGE_PREFIX}/bin/sm-prepare-image -y
