@@ -124,7 +124,7 @@ sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
 sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
   /etc/syslog.conf >${tempdir}/syslog.conf \
     && mv ${tempdir}/syslog.conf /etc/syslog.conf
-pkill -HUP rsyslogd
+svcadm restart system/system-log
 sleep 1
 rm -f /var/log/{auth,postfix}.log
 
