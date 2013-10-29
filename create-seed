@@ -119,6 +119,28 @@ ${imagetoolsdir}/create-smf-repo ${smartoslive} ${imagetoolsdir}/include/manifes
 cp /tmp/repository.db /zones/${protoname}/root/etc/svc/repository.db
 
 #
+# Apply mode/permission changes based on the published manifest.
+#
+while read ftype file mode owner group
+do
+	target="/zones/${protoname}/root/${file}"
+	case "${ftype}" in
+	d)
+		if [ -d ${target} ]; then
+			chmod ${mode} ${target}
+			chown ${owner}:${group} ${target}
+		fi
+		;;
+	f)
+		if [ -f ${target} ]; then
+			chmod ${mode} ${target}
+			chown ${owner}:${group} ${target}
+		fi
+		;;
+	esac
+done < ${smartoslive}/manifest.gen
+
+#
 # Do just enough zoneinit stuff to get a zone to boot, this will be overwritten
 # later when we do a proper smtools install.
 #
