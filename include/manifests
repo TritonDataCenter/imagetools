@@ -8,6 +8,7 @@
 #  * enable system/console-login
 #  * add system/fm/* and enable sendmail-client for SMF notification
 #  * disable network/netcfg
+#  * disable network/shares/group
 #  * add ldap/client (disabled)
 #
 # This file lists the SMF manifests which are available in the global
@@ -143,7 +144,7 @@ network/routing/ripng.xml	disabled
 network/routing/route.xml	disabled
 network/rpc/bind.xml		disabled
 network/smb/client.xml		disabled
-network/shares/group.xml	enabled
+network/shares/group.xml	disabled
 network/shares/reparsed.xml	disabled
 network/shell.xml		disabled
 network/slp.xml			disabled
