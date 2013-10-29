@@ -8,6 +8,7 @@
 #  * enable system/console-login
 #  * add system/fm/* and enable sendmail-client for SMF notification
 #  * disable network/netcfg
+#  * add ldap/client (disabled)
 #
 # This file lists the SMF manifests which are available in the global
 # zone and which should be setup for use in non-global zones.  Not
@@ -38,7 +39,7 @@
 # application/x11/x11-server.xml
 # application/x11/xfs.xml
 # application/x11/xvnc-inetd.xml
-# network/ldap/client.xml
+network/ldap/client.xml		disabled
 network/rpc/keyserv.xml		disabled
 # network/socket-filter-kssl.xml
 # network/ssl/kssl-proxy.xml
