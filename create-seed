@@ -52,9 +52,11 @@ rsync -av ${smartoslive}/overlay/generic/etc/ /zones/${protoname}/root/etc/
 # Apply manual changes.
 #
 #  - remove legacy rc2.d scripts
+#  - remove SDC-specific root cron
 #  - remove users which may clash with pkgsrc, and sort.
 #
 rm -f /zones/${protoname}/root/etc/rc2.d/S*
+rm -f /zones/${protoname}/root/etc/cron.d/crontabs/root
 ed /zones/${protoname}/root/etc/passwd <<EOF
 /^lp/d
 /^gdm/d
