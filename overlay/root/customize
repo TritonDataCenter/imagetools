@@ -124,7 +124,7 @@ sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
 sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
   /etc/syslog.conf >${tempdir}/syslog.conf \
     && mv ${tempdir}/syslog.conf /etc/syslog.conf
-pkill -HUP rsyslogd
+svcadm restart system/system-log
 sleep 1
 rm -f /var/log/{auth,postfix}.log
 
@@ -283,4 +283,5 @@ rm -rf $0 ${tempdir}
 echo "done."
 
 echo "Passing control to sm-prepare-image for the final stage..."
+rm -f /root/zoneconfig
 ${IMAGE_PREFIX}/bin/sm-prepare-image -y
