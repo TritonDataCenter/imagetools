@@ -52,9 +52,11 @@ rsync -av ${smartoslive}/overlay/generic/etc/ /zones/${protoname}/root/etc/
 # Apply manual changes.
 #
 #  - remove legacy rc2.d scripts
+#  - remove SDC-specific root cron
 #  - remove users which may clash with pkgsrc, and sort.
 #
 rm -f /zones/${protoname}/root/etc/rc2.d/S*
+rm -f /zones/${protoname}/root/etc/cron.d/crontabs/root
 ed /zones/${protoname}/root/etc/passwd <<EOF
 /^lp/d
 /^gdm/d
@@ -117,6 +119,28 @@ ${imagetoolsdir}/create-smf-repo ${smartoslive} ${imagetoolsdir}/include/manifes
 #    SVCCFG_CONFIGD_PATH=${smartoslive}/projects/illumos/usr/src/cmd/svc/configd/svc.configd-native \
 #  ${smartoslive}/projects/illumos/usr/src/cmd/svc/svccfg/svccfg-native import ${imagetoolsdir}/include/mdata.xml
 cp /tmp/repository.db /zones/${protoname}/root/etc/svc/repository.db
+
+#
+# Apply mode/permission changes based on the published manifest.
+#
+while read ftype file mode owner group
+do
+	target="/zones/${protoname}/root/${file}"
+	case "${ftype}" in
+	d)
+		if [ -d ${target} ]; then
+			chmod ${mode} ${target}
+			chown ${owner}:${group} ${target}
+		fi
+		;;
+	f)
+		if [ -f ${target} ]; then
+			chmod ${mode} ${target}
+			chown ${owner}:${group} ${target}
+		fi
+		;;
+	esac
+done < ${smartoslive}/manifest.gen
 
 #
 # Do just enough zoneinit stuff to get a zone to boot, this will be overwritten
