@@ -126,7 +126,8 @@ sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
     && mv ${tempdir}/syslog.conf /etc/syslog.conf
 svcadm restart system/system-log
 sleep 1
-rm -f /var/log/{auth,postfix}.log
+rm -f /var/log/{auth,courier,postfix}.log
+touch /var/log/{auth,mail,sys}log
 
 echo "	- configuring logadm"
 ed /etc/logadm.conf >/dev/null <<EOF
