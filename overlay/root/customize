@@ -85,7 +85,7 @@ crle -c /var/ld/ld.config -l @CRLE_DPATH_32@ -s @CRLE_TPATH_32@
 crle -c /var/ld/64/ld.config -64 -l @CRLE_DPATH_64@ -s @CRLE_TPATH_64@
 
 echo "	- modifying /etc/ssh/sshd_config"
-ed /etc/ssh/sshd_config <<EOF
+ed /etc/ssh/sshd_config >/dev/null <<EOF
 /^PasswordAuthentication/s/yes/no/
 /^PermitRootLogin/s/yes/without-password/
 $ a
@@ -154,7 +154,7 @@ EOF
 crontab -l | awk '/logadm/ { $2 = "*" } { print }' | crontab
 
 if pkg_info -qE rsyslog; then
-	echo "  - enabling rsyslog 7"
+	echo "	- enabling rsyslog 7"
 	svcadm disable -s system/system-log
 	svcadm enable pkgsrc/rsyslog
 fi
