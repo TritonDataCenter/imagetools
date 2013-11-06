@@ -84,10 +84,23 @@ echo "	- creating crle configs"
 crle -c /var/ld/ld.config -l @CRLE_DPATH_32@ -s @CRLE_TPATH_32@
 crle -c /var/ld/64/ld.config -64 -l @CRLE_DPATH_64@ -s @CRLE_TPATH_64@
 
-echo "	- adding libsmartsshd.so to /etc/ssh/sshd_config"
-cat >>/etc/ssh/sshd_config <<EOF
+echo "	- modifying /etc/ssh/sshd_config"
+ed /etc/ssh/sshd_config >/dev/null <<EOF
+/^PasswordAuthentication/s/yes/no/
+/^PermitRootLogin/s/yes/without-password/
+$ a
 
+# Enable parsing of ~/.ssh/environment
+PermitUserEnvironment yes
+
+# Path to xauth for X forwarding
+XAuthLocation ${IMAGE_PREFIX}/bin/xauth
+
+# Enable Joyent smartlogin
 PubKeyPlugin libsmartsshd.so
+.
+w
+q
 EOF
 
 echo "	- creating /etc/pkgsrc_version"
@@ -141,7 +154,7 @@ EOF
 crontab -l | awk '/logadm/ { $2 = "*" } { print }' | crontab
 
 if pkg_info -qE rsyslog; then
-	echo "  - enabling rsyslog 7"
+	echo "	- enabling rsyslog 7"
 	svcadm disable -s system/system-log
 	svcadm enable pkgsrc/rsyslog
 fi

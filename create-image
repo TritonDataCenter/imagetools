@@ -16,8 +16,19 @@ set -e
 
 outdir="$(dirname $0)/output"
 
-read -p 'Enter description: ' description
-read -p 'Enter homepage: ' homepage
+case ${name} in
+	base-*)
+	  description="A 32-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
+	  homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+	  ;;
+	base64-*)
+	  description="A 64-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
+	  homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+	  ;;
+esac
+
+[[ -n "${description}" ]] || read -p 'Enter description: ' description
+[[ -n "${homepage}" ]] || read -p 'Enter homepage: ' homepage
 
 if [ -z "${description}" ]; then
 	echo "WARNING: No description entered.  Edit ${outdir}/${name}.json"
