@@ -93,6 +93,9 @@ $ a
 # Enable parsing of ~/.ssh/environment
 PermitUserEnvironment yes
 
+# Path to xauth for X forwarding
+XAuthLocation ${IMAGE_PREFIX}/bin/xauth
+
 # Enable Joyent smartlogin
 PubKeyPlugin libsmartsshd.so
 .
