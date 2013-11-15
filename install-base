@@ -82,7 +82,7 @@ if [[ "${config}" =~ sngl ]]; then
 	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
 	IMAGE_PREFIX="/usr"
 	IMAGE_SYSCONFDIR="/etc"
-	IMAGE_DOC="http://wiki.joyent.com/wiki/display/jpc2/SNGL+Instance"
+	IMAGE_DOC="http://wiki.joyent.com/jpc2/SNGL+Instance"
 else
 	CRLE_DPATH_32="/lib:/usr/lib"
 	CRLE_DPATH_64="/lib/64:/usr/lib/64"
@@ -92,7 +92,7 @@ else
 	IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin"
 	IMAGE_PREFIX="/opt/local"
 	IMAGE_SYSCONFDIR="/opt/local/etc"
-	IMAGE_DOC="http://wiki.joyent.com/wiki/display/jpc2/SmartMachine+Base"
+	IMAGE_DOC="http://wiki.joyent.com/jpc2/SmartMachine+Base"
 fi
 # Older images require groff.
 if [[ "${config}" =~ ^(201[012]|2013Q[12]) ]]; then
