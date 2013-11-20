@@ -17,14 +17,22 @@ set -e
 outdir="$(dirname $0)/output"
 
 case ${name} in
-	base-*)
-	  description="A 32-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	  homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
-	  ;;
-	base64-*)
-	  description="A 64-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	  homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
-	  ;;
+base-*)
+	description="A 32-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
+	homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+	;;
+base64-*)
+	description="A 64-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
+	homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+	;;
+multiarch-*)
+	description="A multiarch SmartOS image with just essential packages installed. This is a beta image only. Please submit any issues to https://github.com/joyent/pkgsrc/issues"
+	homepage="http://wiki.joyent.com/jpc2/SmartMachine+Base"
+	;;
+sngl-*)
+	description="A multiarch SmartOS image utilising a GNU/Linux layout with just essential packages installed. This is an experimental image. Please submit any issues to https://github.com/joyent/pkgsrc/issues"
+	homepage="http://wiki.joyent.com/jpc2/SNGL+Instance"
+	;;
 esac
 
 [[ -n "${description}" ]] || read -p 'Enter description: ' description
