@@ -70,6 +70,7 @@ sdc-manta
 sdc-smartdc
 smtools
 sudo
+wget
 "
 if [[ "${config}" =~ sngl ]]; then
 	CRLE_DPATH_32="/system/lib:/system/usr/lib"
