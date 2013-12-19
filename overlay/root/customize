@@ -125,6 +125,15 @@ cat >/etc/release <<EOF
                    See `uname -v` for assembly date and time.
 EOF
 
+echo "	- making sure /etc/ipadm/ipadm.conf exists"
+if [[ ! -f /etc/ipadm/ipadm.conf ]]; then
+  mkdir -p /etc/ipadm
+  touch /etc/ipadm/ipadm.conf
+fi
+
+echo "	- removing /etc/issue"
+rm -f /etc/issue
+
 echo "	- adding fetch-pkg-vulnerabilities to crontab"
 crontab -l | sed "/fetch-pkg-vulnerabilities/d; \$a\
 0 5 * * * ${IMAGE_PREFIX}/sbin/pkg_admin fetch-pkg-vulnerabilities >/dev/null 2>&1
