@@ -131,6 +131,20 @@ if [[ ! -f /etc/ipadm/ipadm.conf ]]; then
   touch /etc/ipadm/ipadm.conf
 fi
 
+echo "	- making sure /etc/shells exists"
+if [[ ! -f /etc/shells ]]; then
+  cat >/etc/shells <<EOF
+/bin/bash
+/bin/csh
+/bin/ksh
+/bin/sh
+/usr/bin/bash
+/usr/bin/csh
+/usr/bin/ksh
+/usr/bin/sh
+EOF
+fi
+
 echo "	- removing /etc/issue"
 rm -f /etc/issue
 
