@@ -103,6 +103,16 @@ w
 q
 EOF
 
+echo "	- setting default locale to C"
+ed /etc/default/init >/dev/null <<EOF
+/^LANG=/d
+$ a
+LANG=C
+.
+w
+q
+EOF
+
 echo "	- creating /etc/pkgsrc_version"
 cat >/etc/pkgsrc_version <<EOF
 release: ${IMAGE_BRANCH}
