@@ -66,8 +66,6 @@ nodejs
 patch
 pkg_alternatives
 postfix
-sdc-manta
-sdc-smartdc
 smtools
 sudo
 wget
