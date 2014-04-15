@@ -65,7 +65,7 @@ echo "done."
 echo -n "Installing basic packages..."
 (
 	for pkg in ${IMAGE_PACKAGES}; do
-		${IMAGE_PREFIX}/sbin/pkg_info -qE ${pkg} || pkg_add ${pkg} || exit 1
+		${IMAGE_PREFIX}/sbin/pkg_add -u ${pkg} || exit 1
 	done
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
