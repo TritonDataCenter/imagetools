@@ -48,6 +48,10 @@ fi
 # Set up configuration variables for the specified target.
 #
 IMAGE_PACKAGES="
+bmake
+bootstrap-mk-files
+bsdinstall
+bzip2
 changepass
 coreutils
 curl
@@ -55,20 +59,35 @@ diffutils
 duo-unix
 findutils
 gawk
+gcc47-libs
 genbfpw
+gettext-lib
 grep
 gsed
 gtar-base
 guardtime
 less
+libarchive
+libiconv
 mozilla-rootcerts
+nawk
+nbsed
+ncurses
 nodejs
+openssl
 patch
 pkg_alternatives
+pkg_install
+pkg_install-info
+pkgin
 postfix
+readline
 smtools
+sqlite3
 sudo
 wget
+xz
+zlib
 "
 if [[ "${config}" =~ sngl ]]; then
 	CRLE_DPATH_32="/system/lib:/system/usr/lib"
