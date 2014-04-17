@@ -192,6 +192,9 @@ if pkg_info -qE rsyslog; then
 	svcadm enable pkgsrc/rsyslog
 fi
 
+echo "	- importing mdata manifest"
+svccfg import ${IMAGE_PREFIX}/lib/svc/manifest/mdata.xml 
+
 echo "	- populating /root with files from /etc/skel"
 rm -f /etc/skel/local.*
 cp -Rp /etc/skel/.???* /root/
