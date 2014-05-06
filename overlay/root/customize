@@ -215,6 +215,11 @@ sed -e '' /etc/default/init > ${tempdir}/init \
   && mv ${tempdir}/init /etc/default/init
 
 echo "	- configuring postfix"
+ed ${IMAGE_SYSCONFDIR}/postfix/main.cf >/dev/null <<EOF
+/^inet_protocols/d
+w
+q
+EOF
 cat >>${IMAGE_SYSCONFDIR}/postfix/main.cf <<EOF
 
 #
