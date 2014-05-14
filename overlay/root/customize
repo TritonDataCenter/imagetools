@@ -72,9 +72,7 @@ echo "done."
 
 echo -n "Unpacking the SSL root cert bundle..."
 (
-	cd ${IMAGE_SYSCONFDIR}/openssl/certs \
-	&& ${IMAGE_PREFIX}/sbin/mozilla-rootcerts extract \
-	&& ${IMAGE_PREFIX}/sbin/mozilla-rootcerts rehash
+	${IMAGE_PREFIX}/sbin/mozilla-rootcerts install
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
 
