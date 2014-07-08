@@ -56,7 +56,6 @@ changepass
 coreutils
 curl
 diffutils
-duo-unix
 findutils
 gawk
 gcc47-libs
