@@ -328,6 +328,12 @@ echo -n "Rebuilding pkg_alternatives symlinks..."
 # clean volatile passwd files
 rm -f /etc/o{passwd,shadow,user_attr}
 
+ed /etc/hosts >/dev/null <<EOF
+/pkgsrc.joyent.com/d
+w
+q
+EOF
+
 # Whilst we are using changepass in zoneinit we need this.
 mkdir -p /var/lock
 
