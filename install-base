@@ -59,12 +59,10 @@ diffutils
 findutils
 gawk
 gcc47-libs
-genbfpw
 gettext-lib
 grep
 gsed
 gtar-base
-guardtime
 less
 libarchive
 libiconv
