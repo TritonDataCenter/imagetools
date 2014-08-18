@@ -324,11 +324,12 @@ echo -n "Rebuilding pkg_alternatives symlinks..."
 (
 	pkg_alternatives rebuild
 ) >&5 2>&5 || fail "ERROR!"
+echo "done."
 
 # clean volatile passwd files
 rm -f /etc/o{passwd,shadow,user_attr}
 
-ed /etc/hosts >/dev/null <<EOF
+ed /etc/hosts >/dev/null <<EOF || true
 /pkgsrc.joyent.com/d
 w
 q
