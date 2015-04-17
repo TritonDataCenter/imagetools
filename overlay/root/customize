@@ -194,6 +194,8 @@ touch /var/log/{auth,mail,sys}log
 
 echo "	- configuring logadm"
 ed /etc/logadm.conf >/dev/null <<EOF
+/vmadm/d
+/fwadm/d
 /messages/a
 /var/log/authlog -C 5 -a 'kill -HUP \`cat /var/run/*syslog*.pid\`' -s 100m
 /var/log/maillog -C 5 -a 'kill -HUP \`cat /var/run/*syslog*.pid\`' -s 100m
