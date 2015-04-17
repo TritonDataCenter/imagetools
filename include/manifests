@@ -6,7 +6,7 @@
 #  * add nis/client (disabled)
 #  * add rpc/bind + deps (disabled)
 #  * enable system/console-login
-#  * add system/fm/* and enable sendmail-client for SMF notification
+#  * add system/fm/* and enable sendmail for SMF notification
 #  * disable network/netcfg
 #  * disable network/shares/group
 #  * add ldap/client (disabled)
@@ -57,7 +57,7 @@ network/nfs/rquota.xml		disabled
 # network/talk.xml
 # network/ntp.xml
 network/sendmail-client.xml	disabled
-# network/smtp-sendmail.xml
+network/smtp-sendmail.xml	disabled
 # network/telnet.xml
 # network/wpa.xml
 network/rpc/gss.xml		disabled
