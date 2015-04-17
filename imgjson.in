@@ -6,7 +6,7 @@
   "description": "@DESCRIPTION@",
   "homepage": "@HOMEPAGE@",
   "published_at": "@DATESTAMP@",
-  "owner": "9dce1460-0c4c-4417-ab8b-25ca478c5a78",
+  "owner": "00000000-0000-0000-0000-000000000000",
   "public": "false",
   "os": "smartos",
   "urn": "sdc:sdc:@NAME@:@VERSION@",
