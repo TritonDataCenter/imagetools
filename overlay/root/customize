@@ -168,17 +168,18 @@ echo "	- removing /etc/issue"
 rm -f /etc/issue
 
 echo "	- adding fetch-pkg-vulnerabilities to crontab"
-crontab -l | sed "/fetch-pkg-vulnerabilities/d; \$a\
+crontab -l | sed -e "\$ a\\
 0 5 * * * ${IMAGE_PREFIX}/sbin/pkg_admin fetch-pkg-vulnerabilities >/dev/null 2>&1
-" | crontab
+" -e "/fetch-pkg-vulnerabilities/d" | crontab
 
-echo "	- configuring syslog"
-sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
-  /etc/rsyslog.conf >${tempdir}/rsyslog.conf \
-    && mv ${tempdir}/rsyslog.conf /etc/rsyslog.conf
-sed -e 's,/auth.log,/authlog,g' -e 's,/postfix.log,/maillog,g' \
-  /etc/syslog.conf >${tempdir}/syslog.conf \
-    && mv ${tempdir}/syslog.conf /etc/syslog.conf
+echo "	- configuring rsyslog"
+ed /etc/rsyslog.conf >/dev/null 2>&1 <<EOF
+g/auth.log/s/auth.log/authlog/
+g/postfix.log/s/postfix.log/maillog/
+/IncludeConfig/-2;.,$ d
+w
+q
+EOF
 svcadm restart system/system-log
 sleep 1
 rm -f /var/log/{auth,courier,postfix}.log
