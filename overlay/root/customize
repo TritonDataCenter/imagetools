@@ -139,20 +139,20 @@ echo "	- creating /etc/release"
 cat >/etc/release <<EOF
                                 SmartOS x86_64
               Copyright 2010 Sun Microsystems, Inc.  All Rights Reserved.
-              Copyright 2010-2013 Joyent, Inc.  All Rights Reserved.
+                   Copyright 2015 Joyent, Inc.  All Rights Reserved.
                         Use is subject to license terms.
                    See `uname -v` for assembly date and time.
 EOF
 
 echo "	- making sure /etc/ipadm/ipadm.conf exists"
 if [[ ! -f /etc/ipadm/ipadm.conf ]]; then
-  mkdir -p /etc/ipadm
-  touch /etc/ipadm/ipadm.conf
+	mkdir -p /etc/ipadm
+	touch /etc/ipadm/ipadm.conf
 fi
 
 echo "	- making sure /etc/shells exists"
 if [[ ! -f /etc/shells ]]; then
-  cat >/etc/shells <<EOF
+	cat >/etc/shells <<EOF
 /bin/bash
 /bin/csh
 /bin/ksh
