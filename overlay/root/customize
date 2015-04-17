@@ -325,6 +325,7 @@ echo -n "Creating the default 'admin' user..."
 	    -s /usr/bin/bash -d /home/admin \
 	    -m -k /etc/skel admin \
 	&& usermod -P "Service Management,Software Installation" admin \
+	&& mkdir -p ${IMAGE_SYSCONFDIR}/sudoers.d \
 	&& echo "admin ALL=(root) NOPASSWD: SETENV: ALL" \
 	    >${IMAGE_SYSCONFDIR}/sudoers.d/admin \
 	&& chmod 0440 ${IMAGE_SYSCONFDIR}/sudoers.d/admin
