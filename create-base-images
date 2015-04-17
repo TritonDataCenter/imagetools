@@ -1,0 +1,71 @@
+#!/bin/bash
+
+usage()
+{
+	echo "usage: $0 [-hl] -b <branch> -r <release>" >&2
+	exit 1
+}
+
+lts=""
+
+while getopts b:hlr: flag; do
+	case "${flag}" in
+	b) branch=$OPTARG ;;
+	l) lts="-lts" ;;
+	r) release=$OPTARG ;;
+	v) verbose=1 ;;
+	z) zone=$OPTARG ;;
+	*) usage ;;
+	esac
+done
+
+#
+# Sanity checks.
+#
+for var in branch release; do
+	if [ -z "${!var}" ]; then
+		echo "ERROR: ${var} not set" >&2
+		usage
+	fi
+done
+
+createimage()
+{
+	arch=$1; shift
+	image=$1; shift
+	
+	echo "Creating proto zone."
+	vmadm create <<-EOF
+		{
+		  "brand": "joyent",
+		  "image_uuid": "1e9e46ec-e4e5-11e4-9bdb-1788911817ce",
+		  "max_physical_memory": 512,
+		  "alias": "proto-zone",
+		  "resolvers": [
+		    "192.168.1.1"
+		  ],
+		  "nics": [
+		    {
+		      "nic_tag": "admin",
+		      "ip": "dhcp"
+		    }
+		  ]
+		}
+	EOF
+	uuid=$(vmadm list -po uuid alias=proto-zone)
+	echo "Using custom pkgsrc.joyent.com hosts entry."
+	echo -e "165.225.129.231\tpkgsrc.joyent.com" >>/zones/${uuid}/root/etc/hosts
+	echo "Creating ${image} zone."
+	./install-base -c ${branch}-${arch} -n ${image} -r ${release} -z ${uuid}
+	echo "Creating ${image}-${release} image."
+	./create-image ${image}-${release} ${uuid}
+	echo "Deleting proto zone."
+	vmadm delete ${uuid}
+}
+
+createimage i386 minimal-32${lts}
+createimage x86_64 minimal-64${lts}
+createimage multiarch minimal-multiarch${lts}
+createimage i386 base-32${lts}
+createimage x86_64 base-64${lts}
+createimage multiarch base-multiarch${lts}
