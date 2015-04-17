@@ -54,11 +54,17 @@ rsync -av ${smartoslive}/overlay/generic/etc/ /zones/${protoname}/root/etc/
 #  - remove legacy rc2.d scripts
 #  - remove /etc/issue
 #  - remove SDC-specific root cron
+#  - remove legacy /bin/i386 usage from /etc/profile
 #  - remove users which may clash with pkgsrc, and sort.
 #
 rm -f /zones/${protoname}/root/etc/rc2.d/S*
 rm -f /zones/${protoname}/root/etc/issue
 rm -f /zones/${protoname}/root/etc/cron.d/crontabs/root
+ed /zones/${protoname}/root/etc/profile <<EOF
+/bin.i386/
+s,/bin/i386,[ \`uname -p\` = \"i386\" ],
+w
+q
 ed /zones/${protoname}/root/etc/passwd <<EOF
 /^lp/d
 /^gdm/d
