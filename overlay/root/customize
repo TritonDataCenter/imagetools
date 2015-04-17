@@ -70,11 +70,22 @@ echo -n "Installing basic packages..."
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
 
-echo -n "Unpacking the SSL root cert bundle..."
-(
-	${IMAGE_PREFIX}/sbin/mozilla-rootcerts install
-) >&5 2>&5 || fail "ERROR!"
-echo "done."
+if [ ! -f ${IMAGE_SYSCONFDIR}/openssl/certs/mozilla-rootcert-0.pem ]; then
+	echo -n "Unpacking the SSL root cert bundle..."
+	(
+		${IMAGE_PREFIX}/sbin/mozilla-rootcerts install
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+fi
+if [ ! -f /etc/ssl/certs/ca-certificates.crt ]; then
+	echo -n "Creating /etc/ssl/certs/ca-certificates.crt..."
+	(
+		mkdir -p /etc/ssl/certs
+		cat ${IMAGE_SYSCONFDIR}/openssl/certs/*.pem \
+		    >/etc/ssl/certs/ca-certificates.crt
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+fi
 
 echo "Updating miscellaneous config files..."
 
