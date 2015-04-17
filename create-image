@@ -53,10 +53,6 @@ multiarch-*)
 	description="A multiarch SmartOS image with just essential packages installed. This is a beta image only. Please submit any issues to https://github.com/joyent/pkgsrc/issues"
 	homepage="http://wiki.joyent.com/jpc2/Base+Instance"
 	;;
-sngl-*)
-	description="A multiarch SmartOS image utilising a GNU/Linux layout with just essential packages installed. This is an experimental image. Please submit any issues to https://github.com/joyent/pkgsrc/issues"
-	homepage="http://wiki.joyent.com/jpc2/SNGL+Instance"
-	;;
 seed-*)
 	description="Seed Image"
 	homepage="https://docs.joyent.com/images/smartos/base"
