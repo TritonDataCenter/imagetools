@@ -164,6 +164,13 @@ if [[ ! -f /etc/shells ]]; then
 EOF
 fi
 
+echo "	- configuring /etc/hosts"
+ed /etc/hosts >/dev/null 2>&1 <<EOF
+g/localhost/s/localhost/localhost localhost.local/
+w
+q
+EOF
+
 echo "	- removing /etc/issue"
 rm -f /etc/issue
 
