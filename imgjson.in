@@ -18,6 +18,7 @@
     }
   ],
   "requirements": {
+    "min_platform": {"7.0": "20141030T081701Z"},
     "networks": [ {"name": "net0", "description": "public"} ]
   },
   "uuid": "@UUID@"
