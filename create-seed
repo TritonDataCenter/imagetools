@@ -65,6 +65,7 @@ ed /zones/${protoname}/root/etc/profile <<EOF
 s,/bin/i386,[ \`uname -p\` = \"i386\" ],
 w
 q
+EOF
 ed /zones/${protoname}/root/etc/passwd <<EOF
 /^lp/d
 /^gdm/d
