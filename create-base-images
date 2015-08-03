@@ -38,7 +38,7 @@ createimage()
 	vmadm create <<-EOF
 		{
 		  "brand": "joyent",
-		  "image_uuid": "1e9e46ec-e4e5-11e4-9bdb-1788911817ce",
+		  "image_uuid": "d135c918-0558-11e5-bccb-9bb2e57508ee",
 		  "max_physical_memory": 512,
 		  "alias": "proto-zone",
 		  "resolvers": [
