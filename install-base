@@ -101,6 +101,13 @@ base_packages=(
 	sudo
 	wget
 )
+#
+# pkgbuild needs base + git
+#
+pkgbuild_packages=(
+	${base_packages[@]}
+	git-base
+)
 
 #
 # Common settings.
@@ -130,6 +137,9 @@ if [[ "${name}" =~ ^base ]]; then
 elif [[ "${name}" =~ ^minimal ]]; then
 	IMAGE_DOC="https://docs.joyent.com/images/smartos/minimal"
 	IMAGE_PACKAGES="${minimal_packages[@]}"
+elif [[ "${name}" =~ ^pkgbuild ]]; then
+	IMAGE_DOC="https://docs.joyent.com/images/smartos/pkgbuild"
+	IMAGE_PACKAGES="${pkgbuild_packages[@]}"
 else
 	echo "ERROR: Unsupported image name '${name}'" >&2
 	exit 1
@@ -173,7 +183,7 @@ done
 #
 # Install IMAGE_SYSCONFDIR files into the correct location for base images.
 #
-if [[ "${name}" =~ ^base ]]; then
+if [[ "${name}" =~ ^(base|pkgbuild) ]]; then
 	for f in $(find overlay/sysconfdir -type f)
 	do
 		basef=${f##overlay/sysconfdir/}

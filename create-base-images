@@ -69,3 +69,4 @@ createimage multiarch minimal-multiarch${lts}
 createimage i386 base-32${lts}
 createimage x86_64 base-64${lts}
 createimage multiarch base-multiarch${lts}
+createimage x86_64 pkgbuild

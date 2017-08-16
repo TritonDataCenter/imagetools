@@ -305,6 +305,101 @@ EOF
 	EOF
 fi
 
+# XXX: key pkgbuild image off whether git-base is installed.
+if pkg_info -qE git-base; then
+	echo "Configuring pkgbuild image..."
+	mkdir -p /data
+	echo -n "	- fetching pkgsrc.git..."
+	(
+		set -ex
+		git clone -b joyent/release/${IMAGE_BRANCH} --depth 1 \
+		    git://github.com/joyent/pkgsrc.git /data/pkgsrc
+		(
+			cd /data/pkgsrc
+			git submodule init
+			# git doesn't support depth with submodule branches,
+			# so we need to handle it manually
+			for mod in $(git submodule | awk '{print $2}'); do
+				modpath=$(git config -f .gitmodules --get submodule.${mod}.path)
+				modurl=$(git config -f .gitmodules --get submodule.${mod}.url)
+				modbranch=$(git config -f .gitmodules --get submodule.${mod}.branch)
+				barg=""
+				if [ -n "${modbranch}" ]; then
+					barg="-b ${modbranch}"
+				fi
+				git clone ${barg} --depth 1 ${modurl} ${modpath}
+			done
+			git submodule update
+		)
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+	echo -n "	- fetching pkgbuild.git..."
+	(
+		set -ex
+		git clone git://github.com/joyent/pkgbuild.git /data/pkgbuild
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+	echo -n "	- configuring /root/.profile..."
+	(
+		set -ex
+		ed /root/.profile >/dev/null 2>&1 <<-EOF
+			a
+
+			# pkgbuild setup
+			PATH=\${PATH}:/data/pkgbuild/scripts
+			export REMOTE_PACKAGE_URL="http://0.0.0.0:8080/packages"
+			.
+			w
+			q
+		EOF
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+	echo -n "	- installing fs-caching-server..."
+	(
+		set -ex
+		mkdir -p /data/pkgcache
+		(
+			cd /data/pkgcache
+			npm install fs-caching-server
+			rm -rf /root/.npm
+		)
+		cp /data/pkgcache/node_modules/fs-caching-server/smf/manifest.xml \
+		    /data/pkgcache/node_modules/fs-caching-server/smf/manifest.xml.orig
+		ed /data/pkgcache/node_modules/fs-caching-server/smf/manifest.xml >/dev/null 2>&1 <<-EOF
+			/working_directory=/
+			s/tmp/data/
+			/user=/
+			s/nobody/root/
+			s/other/root/
+			/FS_CACHE_REGEX/
+			s/value='.*'/value='\\\\\/packages\\\\\/.*\\\\.(asc|bz2|gz|tar|tgz)$'/
+			/name=.start/
+			s/fs-c/\/data\/pkgcache\/node_modules\/.bin\/fs-c/
+			w
+			q
+		EOF
+		ed /data/pkgcache/node_modules/.bin/fs-caching-server >/dev/null 2>&1 <<-EOF
+			1d
+			i
+			#!/opt/local/bin/node
+			.
+			w
+			q
+		EOF
+		svccfg import /data/pkgcache/node_modules/fs-caching-server/smf/manifest.xml
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+	echo -n "	- caching bootstrap kits..."
+	(
+		set -ex
+		sleep 5
+		cd /tmp
+		wget --recursive --no-directories --delete-after --no-parent --tries=5 \
+		    http://0.0.0.0:8080/packages/SmartOS/bootstrap-pbulk/
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+fi
+
 echo "	- add pkgsrc tools to exec_attr"
 cat >>/etc/security/exec_attr <<EOF
 # Joyent specific execution attributes
@@ -331,6 +426,17 @@ echo -n "Creating the default 'admin' user..."
 	&& chmod 0440 ${IMAGE_SYSCONFDIR}/sudoers.d/admin
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
+
+# XXX: key pkgbuild image off whether git-base is installed.
+if pkg_info -qE git-base; then
+	echo -n "Creating the 'pbulk' user..."
+	(
+		groupadd -g 500 pbulk \
+		&& useradd -u 500 -g pbulk -s /bin/bash \
+		    -d /home/pbulk -c "Package Builder" pbulk
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
+fi
 
 echo -n "Creating the '_pkgsrc' user/group to make users/group start at 1000..."
 (
