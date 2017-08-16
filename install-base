@@ -46,31 +46,17 @@ if [ "$(dirname $0)" != "." ]; then
 fi
 
 #
-# The basic set of packages from the minimal bootstrap.
+# The basic set of packages from the minimal bootstrap.  Only list packages
+# that may require 'pkg_add -u' at build time, and even then we really should
+# just use an updated bootstrap kit.
 #
 bootstrap_packages=(
-	bmake
-	bootstrap-mk-files
-	bsdinstall
-	bzip2
-	gcc47-libs
-	gettext-lib
-	libarchive
-	libiconv
 	mozilla-rootcerts
-	nawk
-	nbsed
-	ncurses
 	openssl
 	pkg_alternatives
 	pkg_install
-	pkg_install-info
 	pkgin
 	pkgsrc-gnupg-keys
-	readline
-	sqlite3
-	xz
-	zlib
 )
 #
 # Minimal images only add that which is required to get a zone to boot.
