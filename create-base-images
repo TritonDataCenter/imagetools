@@ -37,6 +37,17 @@ if ! ${bflag} || ! ${rflag}; then
 	exit 2
 fi
 
+case "${branch}" in
+201[0-5]Q[1-4]|2016Q[1-3])
+	# 20141030
+	seed_uuid="d135c918-0558-11e5-bccb-9bb2e57508ee"
+	;;
+2016Q4|201[7-9]Q[1-4]|20[2-9][0-9]Q[1-4])
+	# 20141030u1 (DATASET-1240)
+	seed_uuid="88a04a6c-d413-11e6-8341-ff5fa45bf3e9"
+	;;
+esac
+
 createimage()
 {
 	arch=$1; shift
@@ -46,7 +57,7 @@ createimage()
 	vmadm create <<-EOF
 		{
 		  "brand": "joyent",
-		  "image_uuid": "d135c918-0558-11e5-bccb-9bb2e57508ee",
+		  "image_uuid": "${seed_uuid}",
 		  "max_physical_memory": 512,
 		  "alias": "proto-zone",
 		  "resolvers": [
