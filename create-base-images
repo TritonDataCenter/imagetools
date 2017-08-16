@@ -52,7 +52,14 @@ createimage()
 {
 	arch=$1; shift
 	image=$1; shift
-	
+
+	uuid=$(vmadm lookup -1 alias=proto-zone 2>/dev/null || true)
+
+	if [ -n "${uuid}" ]; then
+		echo "ERROR: proto-zone ${uuid} already exists" >&2
+		exit 1
+	fi
+
 	echo "Creating proto zone."
 	vmadm create <<-EOF
 		{
@@ -71,7 +78,7 @@ createimage()
 		  ]
 		}
 	EOF
-	uuid=$(vmadm list -po uuid alias=proto-zone)
+	uuid=$(vmadm lookup -1 alias=proto-zone)
 	if ${mflag}; then
 		echo "Using master pkgsrc.joyent.com hosts entry."
 		echo -e "72.2.118.211\tpkgsrc.joyent.com" >>"/zones/${uuid}/root/etc/hosts"
