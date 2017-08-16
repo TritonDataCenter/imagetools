@@ -1,33 +1,41 @@
 #!/bin/bash
 
+set -eu
+
 usage()
 {
-	echo "usage: $0 [-hl] -b <branch> -r <release>" >&2
+	echo "usage: $0 [-hlm] -b <branch> [-d <date>] -r <release>" >&2
 	exit 1
 }
 
 lts=""
+bflag=false
+dflag=""
+mflag=false
+rflag=false
 
-while getopts b:hlr: flag; do
+while getopts ":b:d:hlmr:" flag; do
 	case "${flag}" in
-	b) branch=$OPTARG ;;
+	b) bflag=true; branch=$OPTARG ;;
+	d) dflag="-d $OPTARG" ;;
 	l) lts="-lts" ;;
-	r) release=$OPTARG ;;
+	m) mflag=true ;;
+	r) rflag=true release=$OPTARG ;;
 	v) verbose=1 ;;
 	z) zone=$OPTARG ;;
-	*) usage ;;
+	h) usage; exit ;;
+	*) usage; exit 2 ;;
 	esac
 done
+shift $((OPTIND - 1))
 
 #
 # Sanity checks.
 #
-for var in branch release; do
-	if [ -z "${!var}" ]; then
-		echo "ERROR: ${var} not set" >&2
-		usage
-	fi
-done
+if ! ${bflag} || ! ${rflag}; then
+	usage
+	exit 2
+fi
 
 createimage()
 {
@@ -53,10 +61,12 @@ createimage()
 		}
 	EOF
 	uuid=$(vmadm list -po uuid alias=proto-zone)
-	echo "Using custom pkgsrc.joyent.com hosts entry."
-	echo -e "165.225.129.231\tpkgsrc.joyent.com" >>/zones/${uuid}/root/etc/hosts
+	if ${mflag}; then
+		echo "Using master pkgsrc.joyent.com hosts entry."
+		echo -e "72.2.118.211\tpkgsrc.joyent.com" >>"/zones/${uuid}/root/etc/hosts"
+	fi
 	echo "Creating ${image} zone."
-	./install-base -c ${branch}-${arch} -n ${image} -r ${release} -z ${uuid}
+	./install-base -c ${branch}-${arch} ${dflag} -n ${image} -r ${release} -z ${uuid}
 	echo "Creating ${image}-${release} image."
 	./create-image ${image}-${release} ${uuid}
 	echo "Deleting proto zone."
