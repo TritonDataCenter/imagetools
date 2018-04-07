@@ -83,6 +83,7 @@ base_packages=(
 	less
 	nodejs
 	patch
+	perl
 	postfix
 	rsyslog
 	sudo
