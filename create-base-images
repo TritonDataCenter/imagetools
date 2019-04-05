@@ -91,10 +91,16 @@ createimage()
 	vmadm delete ${uuid}
 }
 
-createimage i386 minimal-32${lts}
-createimage x86_64 minimal-64${lts}
-createimage multiarch minimal-multiarch${lts}
-createimage i386 base-32${lts}
-createimage x86_64 base-64${lts}
-createimage multiarch base-multiarch${lts}
-createimage x86_64 pkgbuild
+if [ -n "${lts}" ]; then
+	createimage i386 minimal-32${lts}
+	createimage x86_64 minimal-64${lts}
+	createimage multiarch minimal-multiarch${lts}
+	createimage i386 base-32${lts}
+	createimage x86_64 base-64${lts}
+	createimage multiarch base-multiarch${lts}
+	createimage x86_64 pkgbuild
+else
+	createimage x86_64 minimal-64
+	createimage x86_64 base-64
+	createimage x86_64 pkgbuild
+fi
