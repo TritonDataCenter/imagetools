@@ -46,9 +46,20 @@ if [ "$(dirname $0)" != "." ]; then
 fi
 
 #
+# Get a single version string we can use for comparison
+#
+OIFS=${IFS}
+IFS="."
+set -- ${release}
+releasenum=$(for i; do printf "%02d" $i 2>/dev/null; done)
+IFS=${OIFS}
+
+#
 # The basic set of packages from the minimal bootstrap.  Only list packages
 # that may require 'pkg_add -u' at build time, and even then we really should
 # just use an updated bootstrap kit.
+#
+# Any package in the list will be marked keepable due to the explicit upgrade.
 #
 bootstrap_packages=(
 	mozilla-rootcerts
@@ -70,6 +81,10 @@ minimal_packages=(
 #
 # Base adds a set of common packages on top of minimal.
 #
+npm=
+if [[ "$release" =~ ^trunk ]] || [ ${releasenum} -ge 180200 ]; then
+	npm="npm"
+fi
 base_packages=(
 	${minimal_packages[@]}
 	coreutils
@@ -82,6 +97,7 @@ base_packages=(
 	gtar-base
 	less
 	nodejs
+	${npm}
 	patch
 	perl
 	postfix
