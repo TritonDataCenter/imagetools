@@ -1,7 +1,6 @@
 FTPMODE=auto
 MAIL=/var/mail/${LOGNAME:?}
 MANPATH=@IMAGE_MANDIRS@
-MANPATH=${MANPATH}:@IMAGE_PREFIX@/gcc47/man:@IMAGE_PREFIX@/java/sun6/man
 MANPATH=${MANPATH}:@IMAGE_PREFIX@/lib/perl5/man:@IMAGE_PREFIX@/lib/perl5/vendor_perl/man
 PAGER=less
 PATH=@IMAGE_PATH@
