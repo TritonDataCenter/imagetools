@@ -329,7 +329,7 @@ if pkg_info -qE git-base; then
 				if [ -n "${modbranch}" ]; then
 					barg="-b ${modbranch}"
 				fi
-				git clone ${barg} --depth 1 ${modurl} ${modpath}
+				git clone ${barg} --depth 10 ${modurl} ${modpath}
 			done
 			git submodule update
 		)
