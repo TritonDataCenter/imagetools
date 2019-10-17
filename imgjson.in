@@ -7,7 +7,7 @@
   "homepage": "@HOMEPAGE@",
   "published_at": "@DATESTAMP@",
   "owner": "00000000-0000-0000-0000-000000000000",
-  "public": "false",
+  "public": "true",
   "os": "smartos",
   "urn": "sdc:sdc:@NAME@:@VERSION@",
   "files": [
