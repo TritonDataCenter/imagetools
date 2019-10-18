@@ -11,15 +11,13 @@ usage()
 lts=""
 bflag=false
 dflag=""
-mflag=false
 rflag=false
 
-while getopts ":b:d:hlmr:" flag; do
+while getopts ":b:d:hlr:" flag; do
 	case "${flag}" in
 	b) bflag=true; branch=$OPTARG ;;
 	d) dflag="-d $OPTARG" ;;
 	l) lts="-lts" ;;
-	m) mflag=true ;;
 	r) rflag=true release=$OPTARG ;;
 	v) verbose=1 ;;
 	z) zone=$OPTARG ;;
@@ -79,12 +77,13 @@ createimage()
 		}
 	EOF
 	uuid=$(vmadm lookup -1 alias=proto-zone)
-	if ${mflag}; then
-		echo "Using master pkgsrc.joyent.com hosts entry."
-		echo -e "72.2.118.211\tpkgsrc.joyent.com" >>"/zones/${uuid}/root/etc/hosts"
-	fi
 	echo "Creating ${image} zone."
-	./install-base -c ${branch}-${arch} ${dflag} -n ${image} -r ${release} -z ${uuid}
+	./install-base \
+	    -c ${branch}-${arch} \
+	    ${dflag} \
+	    -n ${image} \
+	    -r ${release} \
+	    -z ${uuid}
 	echo "Creating ${image}-${release} image."
 	./create-image ${image}-${release} ${uuid}
 	echo "Deleting proto zone."
