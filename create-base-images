@@ -4,25 +4,38 @@ set -eu
 
 usage()
 {
-	echo "usage: $0 [-hlm] -b <branch> [-d <date>] -r <release>" >&2
-	exit 1
+	echo "Usage: $0 [OPTIONS]"
+	echo ""
+	echo "Supported options:"
+	echo "	-b	Branch name (e.g. 2019Q4, trunk)"
+	echo "	-d	Date stamp to use for trunk releases"
+	echo "	-r	Release version (e.g. 19.4.0)"
+	echo "	-s	Suffix to add to image filenames (e.g. lts, trunk)"
+	echo ""
+	echo "Examples:"
+	echo "	# Create 2019Q3/19.3.0 non-LTS release"
+	echo "	$0 -b 2019Q3 -r 19.3.0"
+	echo ""
+	echo "	# Create 2019Q4/19.4.0 LTS release"
+	echo "	$0 -b 2019Q4 -r 19.4.0 -s lts"
+	echo ""
+	echo "	# Create 20200124 snapshot trunk release"
+	echo "	$0 -b trunk -d 20200124 -r 20200124 -s trunk"
 }
 
-lts=""
 bflag=false
 dflag=""
 rflag=false
+suffix=""
 
-while getopts ":b:d:hlr:" flag; do
+while getopts ":b:d:hr:s:" flag; do
 	case "${flag}" in
 	b) bflag=true; branch=$OPTARG ;;
 	d) dflag="-d $OPTARG" ;;
-	l) lts="-lts" ;;
-	r) rflag=true release=$OPTARG ;;
-	v) verbose=1 ;;
-	z) zone=$OPTARG ;;
 	h) usage; exit ;;
-	*) usage; exit 2 ;;
+	r) rflag=true release=$OPTARG ;;
+	s) suffix="-$OPTARG" ;;
+	*) usage >&2; exit 2 ;;
 	esac
 done
 shift $((OPTIND - 1))
@@ -31,7 +44,7 @@ shift $((OPTIND - 1))
 # Sanity checks.
 #
 if ! ${bflag} || ! ${rflag}; then
-	usage
+	usage >&2
 	exit 2
 fi
 
@@ -90,16 +103,6 @@ createimage()
 	vmadm delete ${uuid}
 }
 
-if [ -n "${lts}" ]; then
-	createimage i386 minimal-32${lts}
-	createimage x86_64 minimal-64${lts}
-	createimage multiarch minimal-multiarch${lts}
-	createimage i386 base-32${lts}
-	createimage x86_64 base-64${lts}
-	createimage multiarch base-multiarch${lts}
-	createimage x86_64 pkgbuild
-else
-	createimage x86_64 minimal-64
-	createimage x86_64 base-64
-	createimage x86_64 pkgbuild
-fi
+createimage x86_64 minimal-64${suffix}
+createimage x86_64 base-64${suffix}
+createimage x86_64 pkgbuild${suffix}
