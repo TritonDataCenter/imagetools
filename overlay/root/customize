@@ -315,7 +315,7 @@ if pkg_info -qE git-base; then
 	(
 		set -ex
 		git clone -b joyent/release/${IMAGE_BRANCH} --depth 1 \
-		    git://github.com/joyent/pkgsrc.git /data/pkgsrc
+		    https://github.com/joyent/pkgsrc.git /data/pkgsrc
 		(
 			cd /data/pkgsrc
 			git submodule init
@@ -338,7 +338,7 @@ if pkg_info -qE git-base; then
 	echo -n "	- fetching pkgbuild.git..."
 	(
 		set -ex
-		git clone git://github.com/joyent/pkgbuild.git /data/pkgbuild
+		git clone https://github.com/joyent/pkgbuild.git /data/pkgbuild
 	) >&5 2>&5 || fail "ERROR!"
 	echo "done."
 	echo -n "	- configuring /root/.profile..."
