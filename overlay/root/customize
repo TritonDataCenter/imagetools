@@ -401,6 +401,7 @@ if pkg_info -qE git-base; then
 		sleep 5
 		cd /tmp
 		wget --recursive --no-directories --delete-after --no-parent --tries=5 \
+		    --reject-regex='201[0-9]|202.Q[123]|upstream' \
 		    http://0.0.0.0:8080/packages/SmartOS/bootstrap-pbulk/
 	) >&5 2>&5 || fail "ERROR!"
 	echo "done."
