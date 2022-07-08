@@ -46,7 +46,7 @@ export PATH
 
 if [ ! -f ${tempdir}/$(basename ${PKGSRC_BOOTSTRAP}) ]; then
 	echo -n "Downloading pkgsrc bootstrap..."
-	(cd ${tempdir} && curl -O ${PKGSRC_BOOTSTRAP}) >&5 2>&5 || fail "ERROR!"
+	(cd ${tempdir} && curl -kOL ${PKGSRC_BOOTSTRAP}) >&5 2>&5 || fail "ERROR!"
 	echo "done."
 
 	echo -n "Extracting pkgsrc bootstrap..."
