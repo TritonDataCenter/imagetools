@@ -373,10 +373,14 @@ if pkg_info -qE git-base; then
 			/user=/
 			s/nobody/root/
 			s/other/root/
+			/FS_CACHE_DIR/
+			s,/var/tmp/cache,/data,
+			/FS_CACHE_URL/
+			s,http://pkgsrc.joyent.com,https://pkgsrc.smartos.org,
 			/FS_CACHE_REGEX/
 			s/value='.*'/value='\\\\\/packages\\\\\/.*\\\\.(asc|bz2|gz|tar|tgz)$'/
 			/name=.start/
-			s/fs-c/\/data\/pkgcache\/node_modules\/.bin\/fs-c/
+			s,fs-cach,/data/pkgcache/node_modules/.bin/fs-cach,
 			w
 			q
 		EOF
