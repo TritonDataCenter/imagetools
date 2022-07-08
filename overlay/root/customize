@@ -37,8 +37,7 @@ IMAGE_PRODUCT="@IMAGE_PRODUCT@"
 IMAGE_DOC="@IMAGE_DOC@"
 IMAGE_PACKAGES="@IMAGE_PACKAGES@"
 
-# This isn't written into the image so can be left as HTTP for now.
-PKGSRC_BASE="http://pkgsrc.joyent.com/packages/SmartOS"
+PKGSRC_BASE="https://pkgsrc.smartos.org/packages/SmartOS"
 PKGSRC_BOOTSTRAP="${PKGSRC_BASE}/bootstrap/bootstrap-${IMAGE_BRANCH}-${IMAGE_ARCH}${IMAGE_BOOTDATE}.tar.gz"
 PKGSRC_PACKAGES="${PKGSRC_BASE}/${IMAGE_BRANCH}/${IMAGE_ARCH}/All"
 
@@ -107,7 +106,7 @@ PermitUserEnvironment yes
 # Path to xauth for X forwarding
 XAuthLocation ${IMAGE_PREFIX}/bin/xauth
 
-# Enable Joyent smartlogin
+# Enable Triton SmartLogin
 PubKeyPlugin libsmartsshd.so
 .
 w
@@ -142,6 +141,7 @@ cat >/etc/release <<EOF
                                 SmartOS x86_64
               Copyright 2010 Sun Microsystems, Inc.  All Rights Reserved.
                    Copyright 2015 Joyent, Inc.  All Rights Reserved.
+                    Copyright 2022 MNX Cloud.  All Rights Reserved.
                         Use is subject to license terms.
                    See `uname -v` for assembly date and time.
 EOF
@@ -241,7 +241,7 @@ if pkg_info -qE postfix; then
 	cat >>${IMAGE_SYSCONFDIR}/postfix/main.cf <<EOF
 
 #
-# Joyent customisations
+# SmartOS customisations
 #
 alias_database = hash:${IMAGE_SYSCONFDIR}/postfix/aliases
 alias_maps = \$alias_database
@@ -315,7 +315,7 @@ if pkg_info -qE git-base; then
 	(
 		set -ex
 		git clone -b joyent/release/${IMAGE_BRANCH} --depth 1 \
-		    https://github.com/joyent/pkgsrc.git /data/pkgsrc
+		    https://github.com/TritonDataCenter/pkgsrc.git /data/pkgsrc
 		(
 			cd /data/pkgsrc
 			git submodule init
@@ -338,7 +338,7 @@ if pkg_info -qE git-base; then
 	echo -n "	- fetching pkgbuild.git..."
 	(
 		set -ex
-		git clone https://github.com/joyent/pkgbuild.git /data/pkgbuild
+		git clone https://github.com/TritonDataCenter/pkgbuild.git /data/pkgbuild
 	) >&5 2>&5 || fail "ERROR!"
 	echo "done."
 	echo -n "	- configuring /root/.profile..."
@@ -404,7 +404,7 @@ fi
 
 echo "	- add pkgsrc tools to exec_attr"
 cat >>/etc/security/exec_attr <<EOF
-# Joyent specific execution attributes
+# SmartOS-specific execution attributes
 Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/gmake:uid=0
 Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/make:uid=0
 Software Installation:suser:cmd:::${IMAGE_PREFIX}/bin/pkgin:uid=0
@@ -458,7 +458,7 @@ echo "done."
 rm -f /etc/o{passwd,shadow,user_attr}
 
 ed /etc/hosts >/dev/null <<EOF || true
-/pkgsrc.joyent.com/d
+/pkgsrc.smartos.org/d
 w
 q
 EOF

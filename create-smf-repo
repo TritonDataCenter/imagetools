@@ -20,6 +20,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012 Joyent, Inc.  All rights reserved.
+# Copyright (c) 2022 MNX Cloud.  All rights reserved.
 #
 
 #
@@ -129,8 +130,8 @@ function build_database
 
 #
 # We need to walk through a few different sources of brands and work through it.
-# For now we only care about doing this for the Joyent minimal zone. Some day we
-# can extend this to everything.
+# For now we only care about doing this for the minimal zone. Some day we can
+# extend this to everything.
 #
 build_database ${MANIFEST_LIST} ${OUTPUT}
 chmod 444 ${OUTPUT}

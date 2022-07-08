@@ -19,47 +19,27 @@ outdir="$(dirname $0)/output"
 case ${name} in
 minimal-32-*)
 	description="A 32-bit SmartOS image with just bootstrap packages installed. Ideal for users who want the smallest possible image upon which to build."
-	homepage="https://docs.joyent.com/images/smartos/minimal"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/minimal"
 	;;
 minimal-64-*)
 	description="A 64-bit SmartOS image with just bootstrap packages installed. Ideal for users who want the smallest possible image upon which to build."
-	homepage="https://docs.joyent.com/images/smartos/minimal"
-	;;
-minimal-multiarch-*)
-	description="A multiarch SmartOS image with just bootstrap packages installed. Ideal for users who want the smallest possible image upon which to build."
-	homepage="https://docs.joyent.com/images/smartos/minimal"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/minimal"
 	;;
 base-32-*)
 	description="A 32-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	homepage="https://docs.joyent.com/images/smartos/base"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/base"
 	;;
 base-64-*)
 	description="A 64-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	homepage="https://docs.joyent.com/images/smartos/base"
-	;;
-base-multiarch-*)
-	description="A multiarch SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	homepage="https://docs.joyent.com/images/smartos/base"
-	;;
-base-*)
-	description="A 32-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	homepage="http://wiki.joyent.com/jpc2/Base+Instance"
-	;;
-base64-*)
-	description="A 64-bit SmartOS image with just essential packages installed. Ideal for users who are comfortable with setting up their own environment and tools."
-	homepage="http://wiki.joyent.com/jpc2/Base+Instance"
-	;;
-multiarch-*)
-	description="A multiarch SmartOS image with just essential packages installed. This is a beta image only. Please submit any issues to https://github.com/joyent/pkgsrc/issues"
-	homepage="http://wiki.joyent.com/jpc2/Base+Instance"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/base"
 	;;
 pkgbuild-*)
 	description="A SmartOS image pre-configured for building pkgsrc packages."
-	homepage="https://docs.joyent.com/images/smartos/pkgbuild"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/pkgbuild"
 	;;
 seed-*)
 	description="Seed Image"
-	homepage="https://docs.joyent.com/images/smartos/base"
+	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/base"
 	;;
 esac
 

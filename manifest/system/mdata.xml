@@ -29,7 +29,7 @@
     <stability value="Evolving" />
     <template>
       <common_name>
-        <loctext xml:lang="C">Joyent SDC metadata handler</loctext>
+        <loctext xml:lang="C">Triton Metadata Handler</loctext>
       </common_name>
     </template>
   </service>

@@ -124,7 +124,7 @@ IMAGE_MANDIRS="/opt/local/man:/usr/share/man"
 IMAGE_PATH="/usr/local/sbin:/usr/local/bin:/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin"
 IMAGE_PREFIX="/opt/local"
 IMAGE_SYSCONFDIR="/opt/local/etc"
-IMAGE_PRODUCT="Joyent Instance"
+IMAGE_PRODUCT="SmartOS Instance"
 IMAGE_SHORTPRODUCT="Instance"
 IMAGE_BRANCH="${config%-*}"
 IMAGE_ARCH="${config##*-}"
@@ -137,13 +137,13 @@ IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
 # Per-image settings.
 #
 if [[ "${name}" =~ ^base ]]; then
-	IMAGE_DOC="https://docs.joyent.com/images/smartos/base"
+	IMAGE_DOC="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/base"
 	IMAGE_PACKAGES="${base_packages[@]}"
 elif [[ "${name}" =~ ^minimal ]]; then
-	IMAGE_DOC="https://docs.joyent.com/images/smartos/minimal"
+	IMAGE_DOC="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/minimal"
 	IMAGE_PACKAGES="${minimal_packages[@]}"
 elif [[ "${name}" =~ ^pkgbuild ]]; then
-	IMAGE_DOC="https://docs.joyent.com/images/smartos/pkgbuild"
+	IMAGE_DOC="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/pkgbuild"
 	IMAGE_PACKAGES="${pkgbuild_packages[@]}"
 else
 	echo "ERROR: Unsupported image name '${name}'" >&2
