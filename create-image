@@ -61,7 +61,6 @@ zfs snapshot zones/${zone}@snap$$
 echo "Sending snapshot to ${outdir}/${name}.zfs.gz ..."
 mkdir -p ${outdir}
 zfs send zones/${zone}@snap$$ | \
-    $(dirname $0)/bin/zstreamdeholer | \
     gzip -9 >${outdir}/${name}.zfs.gz
 zfs destroy zones/${zone}@snap$$
 
