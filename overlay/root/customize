@@ -405,6 +405,16 @@ if pkg_info -qE git-base; then
 		    http://0.0.0.0:8080/packages/SmartOS/bootstrap-pbulk/
 	) >&5 2>&5 || fail "ERROR!"
 	echo "done."
+	echo -n "	- pre-creating package directories..."
+	(
+		set -ex
+		# Avoids pkg_add warnings on first run..
+		mkdir -p /data/packages/SmartOS/2021Q4/tools/All
+		mkdir -p /data/packages/SmartOS/2021Q4/x86_64/All
+		mkdir -p /data/packages/SmartOS/trunk/tools/All
+		mkdir -p /data/packages/SmartOS/trunk/x86_64/All
+	) >&5 2>&5 || fail "ERROR!"
+	echo "done."
 fi
 
 echo "	- add pkgsrc tools to exec_attr"
