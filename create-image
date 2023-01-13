@@ -12,7 +12,7 @@ else
 	zone=$1; shift
 fi
 
-set -e
+set -eu
 
 outdir="$(dirname $0)/output"
 
@@ -40,6 +40,14 @@ pkgbuild-*)
 seed-*)
 	description="Seed Image"
 	homepage="https://docs.tritondatacenter.com/public-cloud/instances/infrastructure/images/smartos/base"
+	;;
+esac
+
+min_platform=20210826T002459Z
+version="${name##*-}"
+case "${version}" in
+1[0-9].*|20.*)
+	min_platform=20141030T081701Z
 	;;
 esac
 
@@ -72,10 +80,11 @@ datestamp=$(date '+%FT%TZ')
 
 cat $(dirname $0)/imgjson.in \
   | sed -e "s!@NAME@!${name%-*}!g" \
-        -e "s!@VERSION@!${name##*-}!g" \
+        -e "s!@VERSION@!${version}!g" \
         -e "s!@DATESTAMP@!${datestamp}!g" \
         -e "s!@DESCRIPTION@!${description}!g" \
         -e "s!@HOMEPAGE@!${homepage}!g" \
+        -e "s!@MIN_PLATFORM@!${min_platform}!g" \
         -e "s!@SHA1@!${sha1}!g" \
         -e "s!@SIZE@!${size}!g" \
         -e "s!@UUID@!${uuid}!g" \
