@@ -133,6 +133,12 @@ IMAGE_VERSION="${release}"
 IMAGE_BOOTDATE="${dflag:+-$dflag}"
 IMAGE_CSHPATH=$(echo ${IMAGE_PATH} | sed -e 's,:, ,g')
 
+if [[ "$release" =~ ^trunk ]] || [ ${releasenum} -ge 220400 ]; then
+	IMAGE_GIT_BRANCH="release/${IMAGE_BRANCH}"
+else
+	IMAGE_GIT_BRANCH="joyent/release/${IMAGE_BRANCH}"
+fi
+
 #
 # Per-image settings.
 #
@@ -163,7 +169,8 @@ for var in CRLE_DPATH_32 CRLE_DPATH_64 CRLE_TPATH_32 CRLE_TPATH_64 \
 	   IMAGE_PATH IMAGE_CSHPATH IMAGE_MANDIRS \
 	   IMAGE_PREFIX IMAGE_SYSCONFDIR IMAGE_BOOTDATE \
 	   IMAGE_PRODUCT IMAGE_SHORTPRODUCT IMAGE_VERSION \
-	   IMAGE_BRANCH IMAGE_ARCH IMAGE_NAME IMAGE_DOC IMAGE_PACKAGES
+	   IMAGE_BRANCH IMAGE_GIT_BRANCH IMAGE_ARCH IMAGE_NAME IMAGE_DOC \
+	   IMAGE_PACKAGES
 do
 	sedsubst="${sedsubst} s!@${var}@!${!var}!g;"
 done

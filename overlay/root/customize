@@ -29,6 +29,7 @@ IMAGE_PREFIX="@IMAGE_PREFIX@"
 IMAGE_SYSCONFDIR="@IMAGE_SYSCONFDIR@"
 IMAGE_PRODUCT="@IMAGE_PRODUCT@"
 IMAGE_BRANCH="@IMAGE_BRANCH@"
+IMAGE_GIT_BRANCH="@IMAGE_GIT_BRANCH@"
 IMAGE_ARCH="@IMAGE_ARCH@"
 IMAGE_NAME="@IMAGE_NAME@"
 IMAGE_VERSION="@IMAGE_VERSION@"
@@ -314,7 +315,7 @@ if pkg_info -qE git-base; then
 	echo -n "	- fetching pkgsrc.git..."
 	(
 		set -ex
-		git clone -b joyent/release/${IMAGE_BRANCH} --depth 1 \
+		git clone -b ${IMAGE_GIT_BRANCH} --depth 1 \
 		    https://github.com/TritonDataCenter/pkgsrc.git /data/pkgsrc
 		(
 			cd /data/pkgsrc
