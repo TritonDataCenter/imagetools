@@ -488,10 +488,4 @@ echo "done."
 
 echo "Passing control to sm-prepare-image for the final stage..."
 rm -f /root/zoneconfig
-# Work around joyent/smartos-live#700
-ed ${IMAGE_PREFIX}/bin/sm-prepare-image >/dev/null <<EOF || true
-/zonecontrol/d
-w
-q
-EOF
 ${IMAGE_PREFIX}/bin/sm-prepare-image -y
