@@ -82,7 +82,7 @@ minimal_packages=(
 # Base adds a set of common packages on top of minimal.
 #
 npm=
-if [[ "$release" =~ ^trunk ]] || [ ${releasenum} -ge 180200 ]; then
+if [ ${releasenum} -ge 180200 ] && [ ${releasenum} -lt 230400 ]; then
 	npm="npm"
 fi
 base_packages=(
