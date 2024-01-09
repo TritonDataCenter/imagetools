@@ -61,14 +61,24 @@ IFS=${OIFS}
 #
 # Any package in the list will be marked keepable due to the explicit upgrade.
 #
-bootstrap_packages=(
-	mozilla-rootcerts
-	openssl
-	pkg_alternatives
-	pkg_install
-	pkgin
-	pkgsrc-gnupg-keys
-)
+if [ ${releasenum} -ge 230400 ]; then
+	bootstrap_packages=(
+		mozilla-rootcerts-openssl
+		pkg_alternatives
+		pkg_install
+		pkgin
+		pkgsrc-gnupg-keys
+	)
+else
+	bootstrap_packages=(
+		mozilla-rootcerts
+		openssl
+		pkg_alternatives
+		pkg_install
+		pkgin
+		pkgsrc-gnupg-keys
+	)
+fi
 #
 # Minimal images only add that which is required to get a zone to boot.
 #
