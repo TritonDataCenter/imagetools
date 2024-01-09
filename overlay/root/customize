@@ -410,10 +410,11 @@ if pkg_info -qE git-base; then
 	(
 		set -ex
 		# Avoids pkg_add warnings on first run..
-		mkdir -p /data/packages/SmartOS/2021Q4/tools/All
-		mkdir -p /data/packages/SmartOS/2021Q4/x86_64/All
-		mkdir -p /data/packages/SmartOS/trunk/tools/All
-		mkdir -p /data/packages/SmartOS/trunk/x86_64/All
+		ls -1 /data/packages/SmartOS/bootstrap-pbulk/bootstrap-*-x86_64.tar.gz \
+		    | cut -d- -f3 | while read rel; do
+			mkdir -p /data/packages/SmartOS/${rel}/tools/All
+			mkdir -p /data/packages/SmartOS/${rel}/x86_64/All
+		done
 	) >&5 2>&5 || fail "ERROR!"
 	echo "done."
 fi
