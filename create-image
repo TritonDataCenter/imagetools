@@ -78,7 +78,7 @@ zfs destroy zones/${zone}@snap$$
 echo "Creating ${outdir}/${name}.json ..."
 sha1=$(digest -a sha1 ${outdir}/${name}.zfs.gz)
 size=$(ls -l ${outdir}/${name}.zfs.gz | awk '{print $5}')
-uuid=$(uuid)
+uuid=$(uuid -v 4)
 datestamp=$(date '+%FT%TZ')
 
 cat $(dirname $0)/imgjson.in \
