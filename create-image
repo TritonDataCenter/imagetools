@@ -43,9 +43,12 @@ seed-*)
 	;;
 esac
 
-min_platform=20210826T002459Z
+min_platform=20250612T001439Z
 version="${name##*-}"
 case "${version}" in
+2[1-5].*)
+	min_platform=20210826T002459Z
+	;;
 1[0-9].*|20.*)
 	min_platform=20141030T081701Z
 	;;
