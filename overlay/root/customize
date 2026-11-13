@@ -72,7 +72,16 @@ echo -n "Installing basic packages..."
 ) >&5 2>&5 || fail "ERROR!"
 echo "done."
 
-if [ ! -f ${IMAGE_SYSCONFDIR}/openssl/certs/mozilla-rootcert-0.pem ]; then
+# Look for existing extracted certs.  These filenames change all the time
+# hence the glob.
+need_cert_install=true
+for cert in ${IMAGE_SYSCONFDIR}/openssl/certs/mozilla-rootcert-*.pem; do
+	if [ -f ${cert} ]; then
+		need_cert_install=false
+		break
+	fi
+done
+if ${need_cert_install}; then
 	echo -n "Unpacking the SSL root cert bundle..."
 	(
 		${IMAGE_PREFIX}/sbin/mozilla-rootcerts install
