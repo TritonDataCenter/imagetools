@@ -483,6 +483,9 @@ EOF
 # Whilst we are using changepass in zoneinit we need this.
 mkdir -p /var/lock
 
+# Required for newer OpenSSH.  Update seed image at some point to fix this.
+mkdir -p /var/empty
+
 echo -n "Cleaning up..."
 rm -rf $0 ${tempdir}
 echo "done."
