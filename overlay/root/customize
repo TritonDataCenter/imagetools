@@ -142,7 +142,7 @@ cat >/etc/release <<EOF
                                 SmartOS x86_64
               Copyright 2010 Sun Microsystems, Inc.  All Rights Reserved.
                    Copyright 2015 Joyent, Inc.  All Rights Reserved.
-                    Copyright 2022 MNX Cloud.  All Rights Reserved.
+                Copyright 2026 Edgecast Cloud LLC.  All Rights Reserved.
                         Use is subject to license terms.
                    See `uname -v` for assembly date and time.
 EOF
